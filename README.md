@@ -1,7 +1,7 @@
 # Axoloti (and Ksoloti) panel controls
 A hastily constructed control panel for axoloti and ksoloti, 12 potentiometers, 8 switches, 1 LCD.
 
-![screenshot of axoloti patch](labelsystem5a.png) ![photograph of hastily constructed plywood control panel](hastypanel.png)
+![screenshot of axoloti patch](labelsystem5a.png) ![photograph of hastily constructed plywood control panel](hastypanel.png) ![nominating parameters for hardware control](nominating.png)
 
 # What is this?
 I find on-screen controls do not provide tactile visceral joyful control of sound. I like joyful sound... In 2016, I hastily constructed a panel with 12 rotary potentiometers, 8 push switches in an R_2R ladder to select banks of controls, and a 2x16 character display over I2C. Accompanying software (also hastilly constructed!) uses undocumented features for convenient tactile joyful etc workflow. 
