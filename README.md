@@ -41,6 +41,6 @@ See the demonstration in `labelsystem5a.axp` for suggested methods of usage and 
 
 Parameters inside subpatches using 'on parent' are supported. A portion of the parent identifier of the parent will be shown on the LCD. Long identifiers are truncated preserving first and last characters.
 
-```
-Not all parameter types are supported. I help to support ctrl/toggle, ctrl/button, ctrl/cb16, ctrl/i, and ctrl/i radio types. CAN YOU HELP?
-```
+---
+Not all parameter types are supported. I need help to support ctrl/toggle, ctrl/button, ctrl/cb16, ctrl/i, and ctrl/i radio types. CAN YOU HELP?
+---
