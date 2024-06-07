@@ -33,7 +33,9 @@ All objects are required. Do you need support for OLED displays over SPI? Contro
 The C code (ab)uses, to my knowledge undocumented, features of the Java based software editor related to parameter handling. Everything works well on firmware E95BAC96 and editor 1.0.12, but no other configuration has been tested. Send bug reports, fix bugs, teamwork, yay! :)
 
 # Suggested usage
-See the demonstration in labelsystem5a.axp for suggested methods of usage and workflow. The simplest way to assign parameters to hardware control is to rename with the first character as an '@' symbol. For example 'gain_1' becomes '@gain_1' as in Figure 5.
+See the demonstration in labelsystem5a.axp for suggested methods of usage and workflow. The simplest way to assign parameters to hardware control is to rename with the first character as an '@' symbol. For example `gain_1` becomes `@gain_1`.
+
+![nominating parameters for hardware control](nominating.png)
 
 Parameters inside subpatches using 'on parent' are supported. A portion of the parent identifier of the parent will be shown on the LCD. Long identifiers are truncated preserving first and last characters.
 
