@@ -1,0 +1,1173 @@
+<patch-1.0 appVersion="1.0.12">
+   <comment type="patch/comment" x="28" y="28" text="v5a updated june 2024 - see github.com/zenpho - zenpho@zenpho.co.uk"/>
+   <comment type="patch/comment" x="616" y="42" text="notice &apos;@&apos; in name"/>
+   <comment type="patch/comment" x="742" y="42" text="bipolar positive dials are OK"/>
+   <comment type="patch/comment" x="910" y="42" text="even &apos;on parent&apos; subpatch controls"/>
+   <comment type="patch/comment" x="28" y="56" text="ADC values"/>
+   <comment type="patch/comment" x="112" y="56" text="&apos;current&apos; control in &apos;bank&apos;"/>
+   <obj type="disp/i" uuid="5e35fd0c62d81e70017289250cf28edd26e19e4a" name="i_1" x="252" y="56">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="308" y="56" text="display status on an I2C LCD"/>
+   <obj type="disp/i" uuid="5e35fd0c62d81e70017289250cf28edd26e19e4a" name="i_3" x="476" y="56">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="delay/echo fdbk mix" uuid="15716b14ebe691010ccfd54af72ea23232a843c6" name="@echo_1" x="616" y="56">
+      <params>
+         <frac32.u.map name="mix" value="24.327870845794678"/>
+         <frac32.u.map name="feedback" value="24.518621921539307"/>
+      </params>
+      <attribs>
+         <spinner attributeName="delaylength" value="5000"/>
+      </attribs>
+   </obj>
+   <obj type="ctrl/dial b" uuid="862e7d7f29093cb1ce4aed72244d118ad4d46692" name="@bipDial" x="742" y="56">
+      <params>
+         <frac32.s.map name="value" value="-34.38589954376221"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="ctrl/dial p" uuid="cc5d2846c3d50e425f450c4b9851371b54f4d674" name="@posiDial" x="826" y="56">
+      <params>
+         <frac32.u.map name="value" value="11.766846656799316"/>
+      </params>
+      <attribs/>
+   </obj>
+   <patcher type="patch/patcher" uuid="a4a7aaa9-ef4e-4802-b22a-08d0b2b23e10" name="goodPatcher" x="910" y="56">
+      <params>
+         <frac32.u.map name="@goodDial" value="21.39170217514038"/>
+      </params>
+      <attribs/>
+      <subpatch appVersion="1.0.12">
+         <obj type="osc/phasor lin" uuid="ee34c4d34eba2cbd849b9e5631e60ce1651faf4c" name="@goodDial" x="70" y="14">
+            <params>
+               <frac32.u.map name="freq" onParent="true" value="0.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="patch/outlet a" uuid="abd8c5fd3b0524a6630f65cad6dc27f6c58e2a3e" name="outlet_1" x="196" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <nets>
+            <net>
+               <source obj="@goodDial" outlet="phasor"/>
+               <dest obj="outlet_1" inlet="outlet"/>
+            </net>
+         </nets>
+         <settings>
+            <subpatchmode>no</subpatchmode>
+         </settings>
+         <notes><![CDATA[]]></notes>
+         <windowPos>
+            <x>0</x>
+            <y>23</y>
+            <width>400</width>
+            <height>400</height>
+         </windowPos>
+      </subpatch>
+   </patcher>
+   <obj type="disp/scope buffer" uuid="1dbd5d726cb1050408b496f306fc9e0603067c16" name="scope_2" x="1022" y="56">
+      <params/>
+      <attribs/>
+   </obj>
+   <patchobj type="patch/object" uuid="6b47b798-c3a9-47cf-9dec-df061b37ed5f" name="panelADC" x="28" y="70">
+      <params/>
+      <attribs/>
+      <object id="patch/object" uuid="6b47b798-c3a9-47cf-9dec-df061b37ed5f">
+         <sDescription>monitors and reports adc values</sDescription>
+         <author>zpo</author>
+         <license>BSD</license>
+         <rotatedParams>true</rotatedParams>
+         <inlets/>
+         <outlets>
+            <frac32 name="o0"/>
+            <frac32 name="o1"/>
+            <frac32 name="o2"/>
+            <frac32 name="o3"/>
+            <frac32 name="o4"/>
+            <frac32 name="o5"/>
+            <frac32 name="o6"/>
+            <frac32 name="o7"/>
+            <frac32 name="o8"/>
+            <frac32 name="o9"/>
+            <frac32 name="o10"/>
+            <frac32 name="o11"/>
+            <frac32 name="o12"/>
+         </outlets>
+         <displays/>
+         <params/>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[/*
+ * Axoloti panelADC - see github.com/zenpho - zenpho@zenpho.co.uk
+*/]]></code.declaration>
+         <code.krate><![CDATA[outlet_o0 = adcvalues[0]<<15;
+outlet_o1 = adcvalues[1]<<15;
+outlet_o2 = adcvalues[2]<<15;
+outlet_o3 = adcvalues[3]<<15;
+outlet_o4 = adcvalues[4]<<15;
+outlet_o5 = adcvalues[5]<<15;
+outlet_o6 = adcvalues[6]<<15;
+outlet_o7 = adcvalues[7]<<15;
+outlet_o8 = adcvalues[8]<<15;
+outlet_o9 = adcvalues[9]<<15;
+outlet_o10 = adcvalues[10]<<15;
+outlet_o11 = adcvalues[11]<<15;
+outlet_o12 = adcvalues[12]<<15;]]></code.krate>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="6b47b798-c3a9-47cf-9dec-df061b37ed5f" name="panelControl" x="112" y="70">
+      <params/>
+      <attribs/>
+      <object id="patch/object" uuid="6b47b798-c3a9-47cf-9dec-df061b37ed5f">
+         <sDescription>tracks the state of the control panel (which control is touched, which &apos;bank&apos; of controls is selected, etc)</sDescription>
+         <author>zpo</author>
+         <license>BSD</license>
+         <rotatedParams>true</rotatedParams>
+         <inlets>
+            <frac32 name="i0"/>
+            <frac32 name="i1"/>
+            <frac32 name="i2"/>
+            <frac32 name="i3"/>
+            <frac32 name="i4"/>
+            <frac32 name="i5"/>
+            <frac32 name="i6"/>
+            <frac32 name="i7"/>
+            <frac32 name="i8"/>
+            <frac32 name="i9"/>
+            <frac32 name="i10"/>
+            <frac32 name="i11"/>
+            <frac32 name="i12"/>
+         </inlets>
+         <outlets>
+            <int32 name="currControl"/>
+            <int32 name="currBank"/>
+         </outlets>
+         <displays/>
+         <params/>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[/*
+ * Axoloti panelControl - see github.com/zenpho - zenpho@zenpho.co.uk
+*/
+
+static const unsigned int NUM_KNOBS_PER_BANK = 12;
+static const unsigned int NUM_BANKS = 9;
+
+// ///////////////////////////////////////////////////////
+
+// values from adc inputs for panel potentiometer knobs
+int32_t pots[NUM_KNOBS_PER_BANK];
+
+// value from adc input for R2R ladder switches
+int32_t R2R;
+
+// destination parameter numbers 
+// each number represents an index in terms of the axoloti 
+// PExParameterChange range
+// - one destination for each control in each bank
+ParameterExchange_t* destParamPtrs[NUM_BANKS][NUM_KNOBS_PER_BANK];
+
+// unipolar==0, bipolar==1
+uint8_t destParamTypes[NUM_BANKS][NUM_KNOBS_PER_BANK];
+
+// previously transmitted parameter values
+// - one value for each control in each bank
+int16_t prevs[NUM_BANKS][NUM_KNOBS_PER_BANK];
+
+// parameter changes are inhibited until the physical control "hooks"
+// (passes within a threshold of the previously transmitted value)
+bool hooked[NUM_BANKS][NUM_KNOBS_PER_BANK];
+
+// mechanism for tracking a "current" control potentiometer
+// involves a SMMLA multiply-accumilate low pass filter 
+// storing values in smoothedPots[] and prevSmoothedPots[] arrays
+// k-rate code examines delta values and updates "currControl"
+int32_t prevSmoothedPots[NUM_KNOBS_PER_BANK];
+int32_t smoothedPots[NUM_KNOBS_PER_BANK];
+bool    smoothedPotChanged[NUM_KNOBS_PER_BANK];
+
+// currently moving panel knob - and previously moving
+// valid range 0 to NUM_KNOBS_PER_BANK
+int8_t currControl;
+int8_t prevControl;
+
+// a SMMLA multiply-accumilate lowpass is also used on the panel 
+// R2R ladder switches to switch "banks" of controls
+int32_t smoothedR2R;
+
+// the smoothed R2R ladder switch ADC values are converted from
+// a fractional to an integer value stored here for later use
+// specific R2R ADC values correspond to bank switch choices
+int32_t currS;
+
+// currently selected bank of controls - and previously selected
+// valid range 0 to NUM_BANKS
+int8_t currBank;
+int8_t prevBank;
+
+// part of mechanism to reduce LogTextMessage() display rate
+uint32_t decimateLogCounter;]]></code.declaration>
+         <code.init><![CDATA[// set up initial values for each knob in each bank
+for(int knob=0; knob<NUM_KNOBS_PER_BANK; knob++){
+  // part of mechanism for switching between "current" control
+  // k-rate code examines prev/smoothedPots[]
+  prevSmoothedPots[knob] = 0;       // previous value is zero
+  smoothedPots[knob] = 0;           // is currently at zero
+  smoothedPotChanged[knob] = false; // is not changing
+
+  // for each knob in each bank
+  for(int bank=0; bank<NUM_BANKS; bank++) {
+    destParamPtrs[bank][knob] = NULL;  // does not transmit a value
+    prevs[bank][knob] = 0;         // no previous value transmitted
+    hooked[bank][knob] = false;    // is not yet "hooked"
+  }
+}
+
+// part of mechanism for switching banks of controls
+smoothedR2R = 0;
+currS = 0;
+currBank = prevBank = 0;
+
+// part of mechanism for switching between "current" control
+// index of currently moving panel knob - and previous
+// valid range 0 to NUM_KNOBS_PER_BANK
+currControl = prevControl = 0;
+
+// part of mechanism to reduce LogTextMessage() display rate
+decimateLogCounter = 0;]]></code.init>
+         <code.krate><![CDATA[// read every panel potentiometer
+pots[0]  = inlet_i0;
+pots[1]  = inlet_i1;
+pots[2]  = inlet_i2;
+pots[3]  = inlet_i3;
+pots[4]  = inlet_i4;
+pots[5]  = inlet_i5;
+pots[6]  = inlet_i6;
+pots[7]  = inlet_i7;
+pots[8]  = inlet_i8;
+pots[9]  = inlet_i9;
+pots[10] = inlet_i10;
+pots[11] = inlet_i11;
+
+// read the panel R2R ladder switches
+R2R = inlet_i12;
+
+// smooth panel potentiometer values
+// part of the mechanism for tracking "current" control
+int32_t smoothFactor = (-1<<26)+(32000);
+for(int idx=0; idx<NUM_KNOBS_PER_BANK; idx++){
+  // smooth each pot value with lowpass to remove noise
+  int32_t* potVal  = &pots[idx];
+  int32_t* smthVal = &smoothedPots[idx];
+	
+  int32_t smoothDelta = *smthVal - *potVal;
+  *smthVal = ___SMMLA(smoothDelta, smoothFactor, *smthVal);
+
+  // compute the currControl value by monitoring changes in 
+  // smoothedPots[] prevSmoothedPots[] smoothedPotChanged[] arrays
+  int32_t* prev = &prevSmoothedPots[idx]; // previous value
+  bool* change = &smoothedPotChanged[idx]; // is this pot changing?
+  
+  // important to convert frac (float) input to int32
+  int32_t qtzVal = ConvertFracToInt( *smthVal );
+  
+  if ((*prev != qtzVal )&(!*change)) { 
+    *change = true;     // this pot is changing
+    *prev   = qtzVal;   // keep previous value
+    
+    currControl = idx;  // store index of changed pot
+  } else {
+    *change = false;
+  }
+}
+
+// if we've switched current controls
+if( prevControl != currControl ){
+	//LogTextMessage("new current control %d", currControl);
+	prevControl = currControl;
+}
+
+// select the current bank from the panel switches
+// valid range 0 to NUM_KNOBS_PER_BANK
+int32_t smoothDelta  = (smoothedR2R - R2R);
+smoothFactor = (-1<<26)+(2000);
+smoothedR2R = ___SMMLA(smoothDelta,smoothFactor,smoothedR2R);
+
+if ( (R2R - smoothedR2R) > 0x100000 ) // rising-edge button press?
+{
+	currS = ConvertFracToInt( R2R );
+}
+
+// maping for R2R ADC values to bank choices
+int32_t s = currS;
+if( s >= 29 && s < 35) currBank = 0; // 31
+if( s >= 35 && s < 39) currBank = 1; // 36
+if( s >= 39 && s < 42) currBank = 2; // 41
+if( s >= 42 && s < 45) currBank = 3; // 44
+if( s >= 45 && s < 47) currBank = 4; // 46
+if( s >= 47 && s < 49) currBank = 5; // 48
+if( s >= 49 && s < 50) currBank = 6; // 50
+if( s >= 50 && s < 53) currBank = 7; // 51
+
+// if we've switched banks
+if (prevBank != currBank) {
+
+  //LogTextMessage("new current bank %d", currBank);
+  prevBank = currBank; 
+
+  // unhook all controls - later the panel knobs 
+  // will re-hook themselves if appropriate
+  for(int bank=0; bank<NUM_BANKS; bank++) {
+    for(int knob=0; knob<NUM_KNOBS_PER_BANK; knob++) {
+      hooked[bank][knob] = false;    // is not yet "hooked"
+    }
+  }
+
+  // mark the current control as invalid (until we move another)
+  currControl = -1;
+}
+
+// process every knob for the currently selected bank
+int bank = currBank;
+for(int knob=0; knob<NUM_KNOBS_PER_BANK; knob++) {
+  
+  // compute the cc value for the given panel knob
+  int32_t potVal  = pots[knob]>>15; // values are stored in upper 15 bits
+  int32_t ccVal = __USAT(potVal>>5,7);
+	
+  // does this match the previously transmitted value for this knob in this bank?
+  if( ccVal == prevs[bank][knob] ){
+  	hooked[bank][knob] = true; // "hook" this control ready for transmission
+  }
+
+  if ( hooked[bank][knob] &&      // are we ready to transmit?
+       destParamPtrs[bank][knob] != NULL )  // and is knob set to transmit?
+  {
+      // look up the destination for this knob in this bank
+      ParameterExchange_t* PEx = destParamPtrs[bank][knob];
+
+      // TODO - might we do this?
+      //ParameterExchange_t* PEx = &parent->PExch[2];
+
+      // look up the type for this knob in this bank
+      // unipolar==0, bipolar==1
+      bool parType = destParamTypes[bank][knob];
+      if( parType == 0 ){
+      	PExParameterChange(PEx, smoothedPots[knob], 0xFFF1);
+      }
+      else if ( parType == 1 )
+      {
+      	int32_t bipolar = (smoothedPots[knob]-(1<<26))<<1;
+      	PExParameterChange(PEx, bipolar, 0xFFF1);
+      }
+
+      // keep this value for later comparisons
+      prevs[bank][knob] = ccVal; 
+  }
+}
+
+// send outlets current values
+outlet_currBank = currBank;
+outlet_currControl = currControl;]]></code.krate>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="3aac83f3-c827-4a08-abc8-bd182cf9f1a1" name="panelDisplay" x="308" y="70">
+      <params/>
+      <attribs>
+         <objref attributeName="panelControl" obj="panelControl"/>
+      </attribs>
+      <object id="patch/object" uuid="3aac83f3-c827-4a08-abc8-bd182cf9f1a1">
+         <sDescription>configures I2C LCD screen using pins PB8=SCL PB9=SDA  [version 4]</sDescription>
+         <inlets/>
+         <outlets>
+            <int32 name="currControl"/>
+            <int32 name="currBank"/>
+         </outlets>
+         <displays/>
+         <params/>
+         <attribs>
+            <objref name="panelControl" description="name of companion panelControl object"/>
+         </attribs>
+         <includes/>
+         <code.declaration><![CDATA[// ///////////////////////////////////////////////////////
+static const uint8_t NUM_BANKS = 8;
+static const uint8_t NUM_LABELS_PER_BANK = 12;
+
+// ///////////////////////////////////////////////////////
+
+// array of labels - one label each control in each bank
+//                   sixteen characters per label
+char labels[NUM_BANKS][NUM_LABELS_PER_BANK][16];
+
+// ///////////////////////////////////////////////////////
+
+// currControl, currBank, isHooked are all local copies of
+// values stored in companion "ccRemote"
+
+// which control was last touched  (0=top l, 11=btm r)
+// "touched" changed since last scan of control values
+int8_t currControl; // valid range 0 to 11 (flag value -1)
+int8_t prevControl; 
+
+// current selected bank
+int8_t currBank; // valid range 0 to 9 (flag value -1)
+int8_t prevBank; 
+
+// is ctl "hooked"?
+bool isHooked; // valid true/false
+bool prevIsHooked;
+
+// ///////////////////////////////////////////////////////
+
+// set up the thread for the i2c LCD screen comms
+msg_t ThreadX2(){
+  setup();
+  while(!chThdShouldTerminate()){
+     loop();
+     chThdSleepMilliseconds(1);
+  }
+  chThdExit((msg_t)0);
+}
+static msg_t ThreadX(void *arg) {
+  ((attr_parent *)arg)->ThreadX2();
+}
+WORKING_AREA(waThreadX, 1024);
+Thread *Thd;
+
+// ///////////////////////////////////////////////////////
+
+// commands
+#define LCD_CLEARDISPLAY 0x01
+#define LCD_RETURNHOME 0x02
+#define LCD_ENTRYMODESET 0x04
+#define LCD_DISPLAYCONTROL 0x08
+#define LCD_CURSORSHIFT 0x10
+#define LCD_FUNCTIONSET 0x20
+#define LCD_SETCGRAMADDR 0x40
+#define LCD_SETDDRAMADDR 0x80
+
+// flags for display entry mode
+#define LCD_ENTRYRIGHT 0x00
+#define LCD_ENTRYLEFT 0x02
+#define LCD_ENTRYSHIFTINCREMENT 0x01
+#define LCD_ENTRYSHIFTDECREMENT 0x00
+
+// flags for display on/off control
+#define LCD_DISPLAYON 0x04
+#define LCD_DISPLAYOFF 0x00
+#define LCD_CURSORON 0x02
+#define LCD_CURSOROFF 0x00
+#define LCD_BLINKON 0x01
+#define LCD_BLINKOFF 0x00
+
+// flags for display/cursor shift
+#define LCD_DISPLAYMOVE 0x08
+#define LCD_CURSORMOVE 0x00
+#define LCD_MOVERIGHT 0x04
+#define LCD_MOVELEFT 0x00
+
+// flags for function set
+#define LCD_8BITMODE 0x10
+#define LCD_4BITMODE 0x00
+#define LCD_2LINE 0x08
+#define LCD_1LINE 0x00
+#define LCD_5x10DOTS 0x04
+#define LCD_5x8DOTS 0x00
+
+// flags for backlight control
+#define LCD_BACKLIGHT 0x08
+#define LCD_NOBACKLIGHT 0x00
+
+// flags for lower 4 bits of the i2c expander
+#define EXPAND_RS 1 << 0
+#define EXPAND_RW 1 << 1
+#define EXPAND_CS 1 << 2
+#define EXPAND_BL 1 << 3
+
+// macros for setting and clearing bits
+#define EXPAND_BIT(n)    1 << n
+#define EXPAND_HIGHER(n) (n & 0xF0)
+#define EXPAND_LOWER(n)  ((n & 0x0F) << 4)
+
+// ///////////////////////////////////////////////////////
+
+void newCurrControlLabel(const char* txt) {
+	strncpy(labels[currBank][currControl],txt,15);
+	LogTextMessage("panelDisplay: %s", labels[currBank][currControl]);
+}
+
+// ///////////////////////////////////////////////////////
+
+void dispNumCurrBank(void){
+	char bankAscii = 48 + currBank;    // ascii offset
+	send( (LCD_SETDDRAMADDR | 15), 0); // cursor to far right
+	send( bankAscii , 1 );
+}
+
+void dispNumCurrControl(void){
+	if( currControl == -1 ) { // no valid control touched
+	 writeString("--", 12);
+	}
+	else {                    // display touched control
+	 uint8_t units = currControl%10;
+	 uint8_t  tens = currControl/10;
+	
+	 char  tensAscii = 48 + tens; // ascii offset
+	 char unitsAscii = 48 + units; // ascii offset
+	
+	 send( (LCD_SETDDRAMADDR | 12), 0);
+	 send( tensAscii , 1 );
+	 send( unitsAscii , 1 );
+	}
+}
+
+void dispIsHookedCurrControl(void) {
+	// a control is selected? find the hooked status
+	if( currControl != -1 ) {
+		send( (LCD_SETDDRAMADDR | 14), 0);
+		if ( isHooked ) send( ',' , 1 );
+		else            send( '.' , 1 );
+	}
+	
+}
+
+void dispLabelCurrControl(void) {
+	char defaultLabel[16] = "[none]\0";
+	char* string = &defaultLabel[0];
+	
+	// a control is selected? find the label
+	if( currControl != -1 ) {
+		string = labels[currBank][currControl];
+	
+		// but if the control label is blank
+		if ( string[0] == '\0' ) {
+		  string = &defaultLabel[0];
+		}
+	}
+
+	// display the name on the screen
+	send( (LCD_SETDDRAMADDR | 0), 0); // cursor to left
+	uint8_t pos = 0;
+	while( *string != '\0' && pos < 12 ) {
+		this->send( *string , 1 );
+		pos++;
+		string++;
+	} 
+	
+	// erase any old remaining label text
+	while( pos < 12 ) {
+		this->send( ' ' , 1 );
+		pos++;
+	}
+}
+
+
+
+// testBankLabels() displays each label of each bank
+void testBankLabels(){
+
+	// only use the banks that have been defined with bankLabel objects
+	for(int bankNum=0; bankNum<NUM_BANKS; bankNum++){
+	  for(int labelNum=0; labelNum<NUM_LABELS_PER_BANK; labelNum++){
+		// clear off the display
+		send(LCD_CLEARDISPLAY, 0);
+		chThdSleepMilliseconds(5);
+		
+		// display a label
+		writeString(labels[bankNum][labelNum], 0x00);
+		chThdSleepMilliseconds(450);
+	  }
+	}
+}
+
+void writeString(char* string, uint8_t pos){
+	
+	send( (LCD_SETDDRAMADDR | pos), 0); // set cursor
+	
+	int32_t iteration = 16;
+	while( iteration>0 ){
+		if (*string == 0) break;
+		send( *string, 1 ); // send data
+		string++;
+		iteration--;	
+	}
+}
+
+
+void send(uint8_t value, uint8_t reg){
+     // send reg=0 (RS=low=command)
+     // send reg=1 (RS=high=display)
+	write4bits( EXPAND_HIGHER(value) | reg | EXPAND_BL );
+	write4bits( EXPAND_LOWER(value)  | reg | EXPAND_BL );
+}
+
+
+// transmits a byte to the expander
+void expanderWrite(uint8_t value){
+	// for performance reasons chibios i2cMasterTransmiTimeout()
+	// requires data to be transmitted over i2c bus in SRAM
+	static uint8_t txbuf[1] __attribute__ ((section (".sram2")));
+	static systime_t timeout = MS2ST(50); // time in sys ticks for 50 msec
+
+	txbuf[0] = value;
+	i2cMasterTransmitTimeout(&I2CD1, 0x27, txbuf, 1, 0, 0, timeout);
+}
+
+void pulseEnable(uint8_t value){
+	static systime_t usec1 = US2ST(1); // time in sys ticks for 1 usec
+	static systime_t usec50 = US2ST(50); // time in sys ticks for 50 usec
+	
+	expanderWrite(value | EXPAND_CS); // enable pin is high
+	chThdSleep(usec1);               // enable pulse must be >450ns
+
+	expanderWrite(value & ~EXPAND_CS); // enable pin is low
+	chThdSleep(usec50);               // commands need > 37us to settle	
+}
+
+// writes to the expander (all 8 bits actually) pulsing the CS(Enable) pin
+void write4bits(uint8_t value){
+	expanderWrite(value);
+	pulseEnable(value);
+}
+
+// ///////////////////////
+
+void loop(void){	
+
+	// if a new control is touched
+	if ( prevControl != currControl )
+	{	
+	  // keep track of the new control
+	  //LogTextMessage("LCD new control %d", currControl);
+	  prevControl = currControl;
+
+	  // and update display
+	  dispNumCurrControl();
+	  dispLabelCurrControl();
+	}
+
+	// if the bank has changed
+	if ( prevBank != currBank )
+	{
+		// keep track of the new current bank
+		//LogTextMessage("LCD new bank %d", currBank);
+	  	prevBank = currBank; 
+
+	     // display the new current bank number
+		dispNumCurrBank();
+	}
+
+	// display the 'isHooked' status when required
+	if ( prevIsHooked != isHooked )
+	{
+		// keep track of the current hooked state
+		prevIsHooked = isHooked;
+
+		// display the current hook state
+		//dispIsHookedCurrControl();
+	}
+	
+}
+
+// //////////////////////////////
+
+
+void setup(void){
+
+	chThdSleepMilliseconds(5); // min 4.1 msec
+
+	// begin commands by turning RS, RW and CS(E) pins low
+	expanderWrite(0);
+	chThdSleepMilliseconds(450);
+
+	//put the LCD into 4 bit mode
+	// this is according to the hitachi HD44780 datasheet
+	// figure 24, pg 46
+	write4bits(0x03<<4); 
+	chThdSleepMilliseconds(5); // min 4.1 msec
+	write4bits(0x03<<4); 
+	chThdSleepMilliseconds(5); // min 4.1 msec
+	write4bits(0x03<<4);
+	chThdSleepMilliseconds(1);
+
+	write4bits(0x02<<4); // set 4-bit interface (D4 D5 D6 D7 only)
+
+	// desired function set
+	send(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS, 0);
+
+	// desired display mode
+	send(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF, 0);
+
+	// clear off the display
+	send(LCD_CLEARDISPLAY, 0);
+	chThdSleepMilliseconds(5); // this command takes a long time!
+
+	send(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT, 0);
+
+	// reset cursor
+	send(LCD_RETURNHOME, 0);
+	chThdSleepMilliseconds(10);
+
+}]]></code.declaration>
+         <code.init><![CDATA[// these defaults are overriden by K-rate code
+// we update from companion "ccRemote" obj 
+prevBank = currBank = -1; 
+prevControl = currControl = -1;
+prevIsHooked = isHooked = false;
+
+// set up all labels to be blank
+for(int bank=0; bank<NUM_BANKS; bank++){
+	for(int label=0; label<NUM_LABELS_PER_BANK; label++){
+		//strncpy(labels[bank][label],"-",15);
+		labels[bank][label][0] = 0;
+	}
+}
+
+// setup the i2c pins
+palSetPadMode(GPIOB, 8, PAL_MODE_ALTERNATE(4)|PAL_STM32_PUDR_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SCL
+palSetPadMode(GPIOB, 9, PAL_MODE_ALTERNATE(4)|PAL_STM32_PUDR_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SDA
+static const I2CConfig i2cfg = {
+    OPMODE_I2C,
+    400000,
+    FAST_DUTY_CYCLE_2,
+};
+i2cStart(&I2CD1, &i2cfg);
+
+// set up the thread for the i2c LCD screen comms
+Thd = chThdCreateStatic(
+		waThreadX, 
+		sizeof(waThreadX),
+		NORMALPRIO, 
+		ThreadX, 
+		(void *)this);]]></code.init>
+         <code.dispose><![CDATA[chThdTerminate(Thd);
+chThdWait(Thd);
+
+i2cStop(&I2CD1);
+palSetPadMode(GPIOB, 8, PAL_MODE_INPUT_ANALOG);
+palSetPadMode(GPIOB, 9, PAL_MODE_INPUT_ANALOG);
+LogTextMessage("disposed");]]></code.dispose>
+         <code.krate><![CDATA[// ask companion "ccRemote" for control panel state
+this->currControl = attr_panelControl.currControl;
+this->currBank = attr_panelControl.currBank;
+this->isHooked = attr_panelControl.hooked[this->currBank][this->currControl];
+
+outlet_currControl = this->currControl;
+outlet_currBank = this->currBank;]]></code.krate>
+      </object>
+   </patchobj>
+   <obj type="disp/i" uuid="5e35fd0c62d81e70017289250cf28edd26e19e4a" name="i_2" x="252" y="112">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="disp/i" uuid="5e35fd0c62d81e70017289250cf28edd26e19e4a" name="i_4" x="476" y="112">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="308" y="182" text="automatically assigns parameters to hardware control"/>
+   <comment type="patch/comment" x="308" y="196" text="for any item whose name begins with an &apos;@&apos; character"/>
+   <patchobj type="patch/object" uuid="9bc8f0e0-aa73-43f6-83f6-61e5b64729b4" name="panelAssigner" x="308" y="210">
+      <params/>
+      <attribs>
+         <objref attributeName="panelDisplay" obj="panelDisplay"/>
+         <objref attributeName="panelControl" obj="panelControl"/>
+      </attribs>
+      <object id="patch/object" uuid="9bc8f0e0-aa73-43f6-83f6-61e5b64729b4">
+         <sDescription>automatically assigns parameters nominated for hardware control whose name begins with an &apos;@&apos; character. subpatchers using controls with &apos;parameter on parent&apos;  are somewhat supported- version5</sDescription>
+         <author>zpo</author>
+         <license>BSD</license>
+         <helpPatch>script.axh</helpPatch>
+         <inlets/>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs>
+            <objref name="panelDisplay" description="name of companion panelDisplay object"/>
+            <objref name="panelControl" description="name of companion panelControl object"/>
+         </attribs>
+         <includes/>
+         <code.declaration><![CDATA[/*
+ * Axoloti panelAutomap - version 5 - see github.com/zenpho - zenpho@zenpho.co.uk
+*/
+
+void discoverParameters(){
+
+extern struct KeyValuePair *ObjectKvpRoot;
+extern struct KeyValuePair *ObjectKvps[];
+
+// display count of paramters in the patch (and knobs on control panel)
+const int availableKnobs = 
+	attr_panelControl.NUM_BANKS * attr_panelControl.NUM_KNOBS_PER_BANK;
+LogTextMessage("availableKnobs: %d", availableKnobs);
+LogTextMessage("ObjectKvpRoot.apvp.length: %d", ObjectKvpRoot->apvp.length);
+LogTextMessage("patchMeta.numPEx: %d", patchMeta.numPEx);
+
+// ////////////////////////////////////////////////////////
+
+// assign labels and control numbers to companion objects
+// 'panelControl' and 'panelDisplay'
+//
+// iterate over each parameter and assign until we run out
+// of room on the physical hardware control panel
+//
+unsigned int bank = 0;
+unsigned int knob = 0;
+unsigned int rootPExIdx=0; // index used for PExch[] array
+const unsigned int kvpLength = ObjectKvpRoot->apvp.length;
+unsigned int kvpIdx = 0;
+bool shouldAbort = false;
+do{
+	KeyValuePair* obj = ObjectKvps[kvpIdx]; // get object
+	const char* txt = obj->keyname;    // get name
+
+	if( obj->kvptype == KVP_TYPE_IPVP ) {
+		ParameterExchange_t* PEx = obj->ipvp.PEx; //&(patchMeta.pPExch[rootPExIdx]); // TODO - maybe?
+		uint32_t signals = PEx->signals;
+
+		// does the parameter name begin with an '@' character?
+		if (txt[0] == '@') {
+
+			// debugging info
+			LogTextMessage("b%d k%d: %d(%d) (%s) signals=%d", 
+				bank,
+				knob,
+				kvpIdx,
+				rootPExIdx,
+				txt,
+				signals);
+
+			// is this parameter at the 'top' level of the patch
+			if ( signals == 15 ){
+				attr_panelControl.destParamPtrs[bank][knob] = PEx;
+				LogTextMessage("^-- is a top level parameter");
+				// TODO - better to store ParameterExchange_t* and KeyValuePair* to panelControl?
+			}
+			// is this parameter existing in a sub-patch 
+			// with a 'top' (parameter on parent) equivalent parameter?
+			else if ( signals == -17 ){
+				attr_panelControl.destParamPtrs[bank][knob] = &(patchMeta.pPExch[rootPExIdx]);
+				LogTextMessage("^-- is a sub-patch parameter, using top-level instead");	
+				// TODO - better to store ParameterExchange_t* and KeyValuePair* to panelControl?
+			}
+
+			// unipolar==0, bipolar==1
+			attr_panelControl.destParamTypes[bank][knob] = (obj->ipvp.minvalue!=0); //bool
+
+			// when there's a subpatch 'parameter on parent' label
+			// shorten the 'parent' label, respecting brevity
+			const char* separator = (const char*)memchr(txt, ':', strlen(txt));
+			if (separator != NULL) 
+			{				
+				strncpy(attr_panelDisplay.labels[bank][knob],
+						txt+1,       // first character (skipping '@')
+						1);
+				strncat(attr_panelDisplay.labels[bank][knob],
+						separator-1, // just before separator
+						2);		
+				strncat(attr_panelDisplay.labels[bank][knob], 
+						separator+1, // part after separator
+						12); 
+			}
+			else // standard label, no subpatch 'parameter on parent'
+			{
+				// just skip the first '@' character
+				strncpy(attr_panelDisplay.labels[bank][knob], 
+						txt+1, 
+						15);
+			}
+
+			// next knob (in possibly next bank)
+			knob++;
+			if (knob >= attr_panelControl.NUM_KNOBS_PER_BANK) {
+				knob = 0;
+				bank++;
+				
+				// abort when we run out of room on the control panel
+				if (bank >= attr_panelControl.NUM_BANKS) shouldAbort = true;
+			}
+		}
+
+		if (txt[0] == '@' || signals == -17) {
+			// next rootPEx param
+			rootPExIdx++; // incrementing this here may not be a good strategy
+			if ( rootPExIdx > availableKnobs ) shouldAbort = true;
+		}
+	}
+
+	kvpIdx++;
+	if( kvpIdx>=kvpLength ) shouldAbort=true;
+	
+}while(!shouldAbort);
+}// end discoverParameters()
+
+// ////////////////////////////////////////////////////////
+
+msg_t ThreadX2(){
+  discoverParameters();
+  chThdSleepMilliseconds(1);
+  chThdExit((msg_t)0);
+}
+static msg_t ThreadX(void *arg) {
+	((attr_parent *)arg)->ThreadX2();
+}
+WORKING_AREA(waThreadX, 1024);
+Thread *Thd;]]></code.declaration>
+         <code.init><![CDATA[Thd = chThdCreateStatic(waThreadX, sizeof(waThreadX),
+NORMALPRIO, ThreadX, (void *)this);]]></code.init>
+         <code.dispose><![CDATA[chThdTerminate(Thd);
+chThdWait(Thd);]]></code.dispose>
+      </object>
+   </patchobj>
+   <obj type="audio/out stereo" uuid="a1ca7a567f535acc21055669829101d3ee7f0189" name="out_2" x="1148" y="224">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="28" y="322" text="here are some intuitive but INCORRECT ways to attempt to expose subpatch controls - the correct way is shown above"/>
+   <comment type="patch/comment" x="700" y="322" text="some controls types are NOT supported --- can you help?"/>
+   <patcher type="patch/patcher" uuid="2ceb89f4-bf55-480d-88e0-c93a0010052c" name="@badPatcher1" x="28" y="336">
+      <params>
+         <frac32.u.map name="leftPhasor" value="0.0"/>
+      </params>
+      <attribs/>
+      <subpatch appVersion="1.0.12">
+         <obj type="osc/phasor lin" uuid="ee34c4d34eba2cbd849b9e5631e60ce1651faf4c" name="leftPhasor" x="70" y="14">
+            <params>
+               <frac32.u.map name="freq" onParent="true" value="0.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="patch/outlet a" uuid="abd8c5fd3b0524a6630f65cad6dc27f6c58e2a3e" name="outlet_1" x="196" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <nets>
+            <net>
+               <source obj="leftPhasor" outlet="phasor"/>
+               <dest obj="outlet_1" inlet="outlet"/>
+            </net>
+         </nets>
+         <settings>
+            <subpatchmode>no</subpatchmode>
+            <MidiChannel>1</MidiChannel>
+            <NPresets>8</NPresets>
+            <NPresetEntries>32</NPresetEntries>
+            <NModulationSources>8</NModulationSources>
+            <NModulationTargetsPerSource>8</NModulationTargetsPerSource>
+         </settings>
+         <notes><![CDATA[]]></notes>
+         <windowPos>
+            <x>0</x>
+            <y>23</y>
+            <width>400</width>
+            <height>400</height>
+         </windowPos>
+      </subpatch>
+   </patcher>
+   <obj type="disp/scope buffer" uuid="1dbd5d726cb1050408b496f306fc9e0603067c16" name="scope_1" x="140" y="336">
+      <params/>
+      <attribs/>
+   </obj>
+   <patcher type="patch/patcher" uuid="63b247d2-9bc3-424f-ad1f-f44378968dc1" name="@badPatcher2" x="252" y="336">
+      <params/>
+      <attribs/>
+      <subpatch appVersion="1.0.12">
+         <obj type="osc/phasor lin" uuid="ee34c4d34eba2cbd849b9e5631e60ce1651faf4c" name="midPhasor" x="70" y="14">
+            <params>
+               <frac32.u.map name="freq" value="0.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="patch/outlet a" uuid="abd8c5fd3b0524a6630f65cad6dc27f6c58e2a3e" name="outlet_1" x="196" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <nets>
+            <net>
+               <source obj="midPhasor" outlet="phasor"/>
+               <dest obj="outlet_1" inlet="outlet"/>
+            </net>
+         </nets>
+         <settings>
+            <subpatchmode>no</subpatchmode>
+         </settings>
+         <notes><![CDATA[]]></notes>
+         <windowPos>
+            <x>0</x>
+            <y>23</y>
+            <width>400</width>
+            <height>400</height>
+         </windowPos>
+      </subpatch>
+   </patcher>
+   <obj type="disp/scope buffer" uuid="1dbd5d726cb1050408b496f306fc9e0603067c16" name="scope_3" x="350" y="336">
+      <params/>
+      <attribs/>
+   </obj>
+   <patcher type="patch/patcher" uuid="02db7a0f-345c-44aa-8cbb-e3c56e24fb14" name="@badPatcher3" x="462" y="336">
+      <params>
+         <frac32.u.map name="duffPhasor" value="0.0"/>
+      </params>
+      <attribs/>
+      <subpatch appVersion="1.0.12">
+         <obj type="osc/phasor lin" uuid="ee34c4d34eba2cbd849b9e5631e60ce1651faf4c" name="duffPhasor" x="70" y="14">
+            <params>
+               <frac32.u.map name="freq" onParent="true" value="0.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="patch/outlet a" uuid="abd8c5fd3b0524a6630f65cad6dc27f6c58e2a3e" name="outlet_1" x="196" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <nets>
+            <net>
+               <source obj="duffPhasor" outlet="phasor"/>
+               <dest obj="outlet_1" inlet="outlet"/>
+            </net>
+         </nets>
+         <settings>
+            <subpatchmode>no</subpatchmode>
+         </settings>
+         <notes><![CDATA[]]></notes>
+         <windowPos>
+            <x>0</x>
+            <y>23</y>
+            <width>400</width>
+            <height>400</height>
+         </windowPos>
+      </subpatch>
+   </patcher>
+   <obj type="disp/scope buffer" uuid="1dbd5d726cb1050408b496f306fc9e0603067c16" name="scope_4" x="574" y="336">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="ctrl/cb16" uuid="fd74594344cc6cd720fa4b473a55cbd15cd360e4" name="@cb16_1" x="700" y="336">
+      <params>
+         <bin16 name="b16" value="0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="ctrl/button" uuid="ef3d13774349df85aa9bfecf30dbc91ab8488b3f" name="@button_1" x="910" y="336">
+      <params>
+         <bool32.mom name="b" value="0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="ctrl/i radio 16 h" uuid="75b78d9270bc08741651a7b7acae0fb789172fca" name="@i_1" x="700" y="406">
+      <params>
+         <int32.hradio name="value" value="90744"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="ctrl/toggle" uuid="42b8134fa729d54bfc8d62d6ef3fa99498c1de99" name="@toggle_1" x="910" y="406">
+      <params>
+         <bool32.tgl name="b" value="0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <nets>
+      <net>
+         <source obj="panelADC" outlet="o0"/>
+         <dest obj="panelControl" inlet="i0"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o1"/>
+         <dest obj="panelControl" inlet="i1"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o2"/>
+         <dest obj="panelControl" inlet="i2"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o4"/>
+         <dest obj="panelControl" inlet="i4"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o3"/>
+         <dest obj="panelControl" inlet="i3"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o5"/>
+         <dest obj="panelControl" inlet="i5"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o6"/>
+         <dest obj="panelControl" inlet="i6"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o7"/>
+         <dest obj="panelControl" inlet="i7"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o8"/>
+         <dest obj="panelControl" inlet="i8"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o9"/>
+         <dest obj="panelControl" inlet="i9"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o10"/>
+         <dest obj="panelControl" inlet="i10"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o11"/>
+         <dest obj="panelControl" inlet="i11"/>
+      </net>
+      <net>
+         <source obj="panelControl" outlet="currBank"/>
+         <dest obj="i_2" inlet="in"/>
+      </net>
+      <net>
+         <source obj="panelControl" outlet="currControl"/>
+         <dest obj="i_1" inlet="in"/>
+      </net>
+      <net>
+         <source obj="panelADC" outlet="o12"/>
+         <dest obj="panelControl" inlet="i12"/>
+      </net>
+      <net>
+         <source obj="goodPatcher" outlet="outlet_1"/>
+         <dest obj="scope_2" inlet="in"/>
+      </net>
+      <net>
+         <source obj="panelDisplay" outlet="currControl"/>
+         <dest obj="i_3" inlet="in"/>
+      </net>
+      <net>
+         <source obj="panelDisplay" outlet="currBank"/>
+         <dest obj="i_4" inlet="in"/>
+      </net>
+      <net>
+         <source obj="@badPatcher1" outlet="outlet_1"/>
+         <dest obj="scope_1" inlet="in"/>
+      </net>
+      <net>
+         <source obj="@badPatcher2" outlet="outlet_1"/>
+         <dest obj="scope_3" inlet="in"/>
+      </net>
+      <net>
+         <source obj="@badPatcher3" outlet="outlet_1"/>
+         <dest obj="scope_4" inlet="in"/>
+      </net>
+   </nets>
+   <settings>
+      <subpatchmode>no</subpatchmode>
+      <MidiChannel>1</MidiChannel>
+      <NPresets>0</NPresets>
+      <NPresetEntries>0</NPresetEntries>
+      <NModulationSources>0</NModulationSources>
+      <NModulationTargetsPerSource>0</NModulationTargetsPerSource>
+   </settings>
+   <notes><![CDATA[]]></notes>
+   <windowPos>
+      <x>77</x>
+      <y>23</y>
+      <width>1163</width>
+      <height>622</height>
+   </windowPos>
+</patch-1.0>
