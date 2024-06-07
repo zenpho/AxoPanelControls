@@ -1,5 +1,5 @@
-# Axoloti (and Ksoloti) panel controls
-A hastily constructed control panel for axoloti and ksoloti, 12 potentiometers, 8 switches, 1 LCD.
+# Axoloti (and Ksoloti?) panel controls
+A hastily constructed control panel for axoloti and ksoloti(?), 12 potentiometers, 8 switches, 1 LCD.
 
 ![screenshot of axoloti patch](labelsystem5a.png) ![photograph of hastily constructed plywood control panel](hastypanel.png)
 
