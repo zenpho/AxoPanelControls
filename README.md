@@ -1,5 +1,5 @@
 # Axoloti and Ksoloti panel controls
-A hastily constructed control panel for [axoloti](https://github.com/axoloti/axoloti) and [ksoloti](https://github.com/ksoloti), 12 potentiometers, 8 switches, 1 LCD.
+A hastily constructed control panel for [axoloti](https://github.com/axoloti/axoloti) and [ksoloti](https://github.com/ksoloti), 12 potentiometers, 8 switches, 1 LCD. The [ccsystem branch](../../tree/ccsystem) presents an alternative method of nominating controls.
 
 ![screenshot of axoloti patch](labelsystem5a.png) ![photograph of hastily constructed plywood control panel](hastypanel.png) 
 
@@ -10,8 +10,6 @@ Simply add the panel objects to any pre-existing patch, nominate controls (up to
 
 ![objects whose name begins with an at character are nominated for control panel assignment](usage-2.png)
 ![physically moving a control displays the associated label](usage-3.gif)
-
-The [ccsystem branch](../../tree/ccsystem) presents an alternative method of nominating controls.
 
 # Software overview
 The software monitors rotary control and bank selection switch state and reacts appropriately. Preferred workflow is to add labelsystem objects to an existing patch and nominate (more on that later) which parameters will be assigned to hardware controls. If more than 12 parameters are nominated, the system can use upto 8 banks of 12. When turning a physical control, the LCD clearly identifies the parameter label, current bank, and any unused banks or controls. All changes are “hooked” (aka “pickup”) which avoids sudden jumps when switching banks.
