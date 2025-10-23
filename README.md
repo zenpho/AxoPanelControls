@@ -37,8 +37,8 @@ All objects are required. Do you need support for OLED displays over SPI? Contro
 
 | Object | Description |
 |--------|-------------|
-| `midiOut` | Specifies if MIDI transmission will be via DIN MIDI or DIN + USB MIDI simultaneously |
-| | *MIDI reception is always via DIN and USB MIDI simultaneously* |
+| `midiOut` | Specifies if MIDI transmission will be via DIN MIDI or DIN + USB MIDI simultaneously. |
+| | *MIDI reception is always via DIN and USB MIDI simultaneously.* |
 | `sysexReport` | Handles DIN and USB MIDI SYSTEM EXCLUSIVE messaging. |
 | | *Provides store and recall of parameters as MIDI system exclusive data via either or both DIN and USB MIDI.* |
 | `panelLCD` | Display recently touched control labels and identifiy used/unused clearly. 
@@ -53,7 +53,7 @@ All objects are required. Do you need support for OLED displays over SPI? Contro
 The C code (ab)uses, to my knowledge undocumented, features of the Java based software editor related to parameter handling. 
 
 # Suggested usage
-See the demonstration in `ccsystem1a.axp` for suggested methods of usage and workflow. The simplest way to assign parameters to hardware control is to use the right-click menu in the java editor to assign a MIDI CC to a parameter. The editor will show a small `[C']` next to dials that have been assigned. 
+The simplest way to assign parameters to hardware control is to use the right-click menu in the java editor to assign a MIDI CC to a parameter. The editor will show a small `[C']` next to dials that have been assigned. 
 
 ![assigning parameters for hardware control](usage-4.png)
 
