@@ -1,12 +1,12 @@
 # AxoPanelControls SYXSystem
 A hastily constructed control panel for [axoloti](https://github.com/axoloti/axoloti) and [ksoloti](https://github.com/ksoloti), 12 potentiometers, 8 switches, 1 LCD.
 
-![screenshot of patch](syxsystem1a.png) ![photograph of hastily constructed plywood control panel](hastypanel.png) 
+![screenshot of patch](syxsystem1e.png) ![photograph of hastily constructed plywood control panel](hastypanel.png) 
 
 # What is this?
 I find on-screen controls do not provide tactile visceral joyful control of sound. I like joyful sound... In 2016, I hastily constructed a panel with 12 rotary potentiometers, 8 push switches in an R_2R ladder to select banks of controls, and a 2x16 character display over I2C. Accompanying software (also hastilly constructed!) uses undocumented features for convenient tactile joyful etc workflow.
 
-This provides a simple and total recall of performances using a MIDI sequencer with MIDI CONTROL CHANGE messages, and support for snapshot of the entire system state with MIDI SYSTEM EXCLUSIVE.
+My software provides a simple and total recall of performances using a MIDI sequencer with MIDI CONTROL CHANGE messages, and support for snapshot of the entire system state with MIDI SYSTEM EXCLUSIVE.
 
 Ksoloti and Axoloti firmware E95BAC96 has 'quirky' midi handling of system exclusive data. Use [My custom firmware with minor bugfixes](https://github.com/zenpho/ks1.0.12/tree/midi-patch) improves MIDI handling and I can confirm stable behaviour. 
 
@@ -14,16 +14,23 @@ Simply add the panel objects to any pre-existing patch, nominate controls (up to
 
 ![physically moving a control displays the associated label](usage-3.gif)
 
+## Store and recall
+
+A MIDI PROGRAM CHANGE #127 (and setting all panel switches high) will transmit a 'snapshot' for any assigned parameters as both MIDI CONTROL CHANGE values and MIDI SYSTEM EXCLUSIVE data. These may be recorded by a MIDI sequencer and retransmitted to the hardware for simple and total recall of the system state. 
+
+I find it useful to disable the patch preset system axoloti/ksoloti editor, and instead save multiple 'snapshot' MIDI files on disk. This way I can capture and transmit any previously captured system state whilst any patch is running standalone.
+
 See also [labelsystem](../../) and [ccsystem](../../tree/ccsystem) alternative systems.
 
 # Software overview
 The software monitors rotary control and bank selection switch state and reacts appropriately. Preferred workflow is to add syxsystem objects to an existing patch and assign MIDI cc which will then be assigned to upto 8 banks of 12 physical controls. When turning a physical control, the LCD clearly identifies the parameter label, current bank, and any unused banks or controls. All changes are “hooked” (aka “pickup”) which avoids sudden jumps when switching banks.
 
-A good starting point is `syxsystem1a.axp` which includes a complete demonstration of the system. Since AXP “patch” files can contain embedded C sourcecode you may copy-paste into your own patches to enjoy.
+A good starting point is `syxsystem1e.axp` which includes a complete demonstration of the system. Since AXP “patch” files can contain embedded C sourcecode you may copy-paste into your own patches to enjoy.
 
 | Filename | Description |
 |----------|-------------|
-| `syxsystem1a.axp` | Demonstration. Start here! |
+| `syxsystem1e.axp` | Demonstration. Start here! For front panel layout with 12 pots and 4 toggle switches. |
+| `syxsystem1m.axp` | Demonstration. Start here! For panel with 8 pots and 2 toggle switches. |
 
 ## Objects
 All objects are required. Do you need support for OLED displays over SPI? Controls from I2C ADC modules? Hack on my code. :)
@@ -38,7 +45,7 @@ All objects are required. Do you need support for OLED displays over SPI? Contro
 | | *Reports controller state for any adjusted parameter as MIDI messages on either or both DIN and USB MIDI.* |
 | `panelAssign` | Assigns nominated parameters to `panelControl` and `panelDisplay`. 
 | | *Objects with parameters assigned MIDI CC (with the right-click menu in the java editor) from CC#1..119 are nominated. Subpatch 'on parent' parameters are supported.  Not all parmameter types are supported yet – can you help?* |
-| `panelSysex` | Handles DIN and USB MIDI SYSTEM EXCLUSIVE messaging. |
+| `sysexReport` | Handles DIN and USB MIDI SYSTEM EXCLUSIVE messaging. |
 | | *Provides store and recall of parameters as MIDI system exclusive data via either or both DIN and USB MIDI.* |
 
 The C code (ab)uses, to my knowledge undocumented, features of the Java based software editor related to parameter handling. 
@@ -49,12 +56,6 @@ See the demonstration in `ccsystem1a.axp` for suggested methods of usage and wor
 ![assigning parameters for hardware control](usage-4.png)
 
 Parameters inside subpatches using 'on parent' are supported. Even sub-subpatched parameters are supported although the parameter label will not always be shown correctly on the LCD in this case.
-
-## Store and recall
-
-A MIDI PROGRAM CHANGE #127 will transmit a 'snapshot' as MIDI CONTROL CHANGE messages for all assigned parameters, and MIDI SYSTEM EXCLUSIVE data. These may be recorded by a MIDI sequencer and retransmitted to the hardware for simple and total recall of the system state.
-
-See also [labelsystem](../../) and [ccsystem](../../tree/ccsystem) alternative systems.
 
 ---
 LCD behaviour is workable but not ideal with ctrl/toggle, ctrl/button, ctrl/cb16, ctrl/i, and ctrl/i_radio types. CAN YOU HELP?
