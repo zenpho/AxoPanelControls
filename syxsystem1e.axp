@@ -1,0 +1,1389 @@
+<patch-1.0 appVersion="1.0.12">
+   <comment type="patch/comment" x="42" y="28" text="SYXSystem and CCSystem used for MIDI CC and System Exclusive"/>
+   <comment type="patch/comment" x="42" y="42" text="kick drum with jt/granular/grainverb effect processing"/>
+   <comment type="patch/comment" x="42" y="84" text="note36 triggers kik"/>
+   <comment type="patch/comment" x="266" y="84" text="kick from n36 or lfo"/>
+   <comment type="patch/comment" x="574" y="84" text="external audio input"/>
+   <obj type="rbrt/midi/in/note on" uuid="c096fbf5-e91c-44c2-9d14-ee9af6bfa6ef" name="note_1" x="42" y="98">
+      <params/>
+      <attribs>
+         <spinner attributeName="startNote" value="36"/>
+         <spinner attributeName="endNote" value="36"/>
+      </attribs>
+   </obj>
+   <patchobj type="patch/object" uuid="d391d6e3-2949-452c-99f1-634f897505c3" name="lfo_1" x="154" y="98">
+      <params>
+         <bool32.tgl name="thru" MidiCC="8" value="0"/>
+      </params>
+      <attribs/>
+      <object id="patch/object" uuid="d391d6e3-2949-452c-99f1-634f897505c3">
+         <helpPatch>ctrl.axh</helpPatch>
+         <inlets>
+            <bool32 name="in"/>
+         </inlets>
+         <outlets>
+            <bool32 name="out" description="output"/>
+         </outlets>
+         <displays/>
+         <params>
+            <bool32.tgl name="thru" noLabel="true"/>
+         </params>
+         <attribs/>
+         <includes/>
+         <code.krate><![CDATA[outlet_out = param_thru ? inlet_in : 0;]]></code.krate>
+      </object>
+   </patchobj>
+   <obj type="logic/or 2" uuid="3805d3c84d30032a44fbdbe42d9a2988a1790a3e" name="or_1" x="266" y="98">
+      <params/>
+      <attribs/>
+   </obj>
+   <patcher type="patch/patcher" uuid="eccdafb7-1b44-49b0-bc3d-fe46369782ae" name="obj_1" x="336" y="98">
+      <params>
+         <frac32.s.map name="d1" MidiCC="40" value="-40.0"/>
+         <frac32.s.map name="lp1" MidiCC="41" value="-60.0"/>
+         <frac32.s.map name="d2" MidiCC="42" value="-7.0"/>
+         <frac32.u.map name="amt" MidiCC="43" value="12.0"/>
+         <frac32.s.map name="sine_1" MidiCC="44" value="-38.0"/>
+      </params>
+      <attribs/>
+      <subpatch appVersion="1.0.12">
+         <obj type="patch/inlet b" uuid="3b0d3eacb5bb978cb05d1372aa2714d5a4790844" name="trig" x="14" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <obj type="env/d" uuid="190ae648e41832b41adbedb465317c18a010aefe" name="d1" x="112" y="14">
+            <params>
+               <frac32.s.map name="d" onParent="true" value="-16.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="noise/uniform" uuid="a3926ef22ae9ac217cd09933d90101848796eb78" name="noise.uniform_2" x="224" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <obj type="math/abs" uuid="f4078fd9b2dff40d4f1551b79900c9ab360c99" name="abs_1" x="322" y="14">
+            <params/>
+            <attribs/>
+         </obj>
+         <obj type="filter/lp1" uuid="1b1fd7085e44d2b7b80b59b8d68796b909c1b2cc" name="lp1" x="420" y="14">
+            <params>
+               <frac32.s.map name="freq" onParent="true" value="32.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="env/d lin m" uuid="e9d9a5152981b17626748fd93e7e6a39c0afe3aa" name="d2" x="112" y="98">
+            <params>
+               <frac32.s.map name="d" onParent="true" value="-12.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="math/*c" uuid="7d5ef61c3bcd571ee6bbd8437ef3612125dfb225" name="amt" x="210" y="98">
+            <params>
+               <frac32.u.map name="amp" onParent="true" value="63.5"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="sss/osc/sineSnc" uuid="10e26e84-6c62-4a3c-896e-8a115e47d0a1" name="sine_1" x="308" y="98">
+            <params>
+               <frac32.s.map name="pitch" onParent="true" value="-45.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <obj type="math/*" uuid="dc7fbdd46e5e6d4b8de62ee63fd6321639b2f167" name="*_1" x="420" y="98">
+            <params/>
+            <attribs/>
+         </obj>
+         <obj type="math/*" uuid="c16a625a661f40e4b359db604dcd00b3befcdbe3" name="*_2" x="420" y="168">
+            <params/>
+            <attribs/>
+         </obj>
+         <obj type="patch/outlet a" uuid="abd8c5fd3b0524a6630f65cad6dc27f6c58e2a3e" name="out" x="504" y="168">
+            <params/>
+            <attribs/>
+         </obj>
+         <obj type="timer/pulselength" uuid="ca68725237d8ba8407773340801660a9fd9b0dba" name="pulselength_1" x="112" y="196">
+            <params>
+               <frac32.s.map name="delay" value="1.0"/>
+            </params>
+            <attribs/>
+         </obj>
+         <nets>
+            <net>
+               <source obj="noise.uniform_2" outlet="wave"/>
+               <dest obj="abs_1" inlet="in"/>
+            </net>
+            <net>
+               <source obj="d2" outlet="env"/>
+               <dest obj="*_2" inlet="b"/>
+            </net>
+            <net>
+               <source obj="*_1" outlet="result"/>
+               <dest obj="*_2" inlet="a"/>
+            </net>
+            <net>
+               <source obj="amt" outlet="out"/>
+               <dest obj="sine_1" inlet="pitch"/>
+            </net>
+            <net>
+               <source obj="abs_1" outlet="out"/>
+               <dest obj="lp1" inlet="in"/>
+            </net>
+            <net>
+               <source obj="lp1" outlet="out"/>
+               <dest obj="*_1" inlet="a"/>
+            </net>
+            <net>
+               <source obj="trig" outlet="inlet"/>
+               <dest obj="d1" inlet="trig"/>
+               <dest obj="d2" inlet="trig"/>
+               <dest obj="pulselength_1" inlet="trig"/>
+            </net>
+            <net>
+               <source obj="d1" outlet="env"/>
+               <dest obj="amt" inlet="in"/>
+            </net>
+            <net>
+               <source obj="*_2" outlet="result"/>
+               <dest obj="out" inlet="outlet"/>
+            </net>
+            <net>
+               <source obj="sine_1" outlet="wave"/>
+               <dest obj="*_1" inlet="b"/>
+            </net>
+            <net>
+               <source obj="pulselength_1" outlet="pulse"/>
+               <dest obj="sine_1" inlet="sync"/>
+            </net>
+         </nets>
+         <settings>
+            <subpatchmode>no</subpatchmode>
+         </settings>
+         <notes><![CDATA[]]></notes>
+         <windowPos>
+            <x>0</x>
+            <y>23</y>
+            <width>800</width>
+            <height>478</height>
+         </windowPos>
+      </subpatch>
+   </patcher>
+   <patchobj type="patch/object" uuid="da4740a7-758f-428d-98bf-38bbc9cf3940" name="fromKIK" x="476" y="98">
+      <params/>
+      <attribs/>
+      <object id="patch/object" uuid="da4740a7-758f-428d-98bf-38bbc9cf3940">
+         <sDescription>audio node, signal received elsewhere</sDescription>
+         <author>zenpho</author>
+         <inlets>
+            <frac32buffer name="outlet" description="outlet"/>
+         </inlets>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[int32buffer _outlet;]]></code.declaration>
+         <code.srate><![CDATA[_outlet[buffer_index] = inlet_outlet;]]></code.srate>
+      </object>
+   </patchobj>
+   <obj type="audio/in stereo" uuid="99848ad6d90a8e615e83b2e619cfc806f28e7281" name="in_1" x="574" y="98">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="math/gain" uuid="62b1c1a6337c7c8f6aec96408a432477b113cfa0" name="gain_5" x="672" y="98">
+      <params>
+         <frac32.u.map name="amp" MidiCC="6" value="0.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <patchobj type="patch/object" uuid="da4740a7-758f-428d-98bf-38bbc9cf3940" name="fromEXT" x="770" y="98">
+      <params/>
+      <attribs/>
+      <object id="patch/object" uuid="da4740a7-758f-428d-98bf-38bbc9cf3940">
+         <sDescription>audio node, signal received elsewhere</sDescription>
+         <author>zenpho</author>
+         <inlets>
+            <frac32buffer name="outlet" description="outlet"/>
+         </inlets>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[int32buffer _outlet;]]></code.declaration>
+         <code.srate><![CDATA[_outlet[buffer_index] = inlet_outlet;]]></code.srate>
+      </object>
+   </patchobj>
+   <obj type="drj/math/sum8" uuid="23a294411ed86ae23cb1214a6a72122a99d46692" name="sum8_1" x="1008" y="98">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="audio/out stereo" uuid="a1ca7a567f535acc21055669829101d3ee7f0189" name="out_1" x="1092" y="98">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="224" y="140" text="cc8"/>
+   <comment type="patch/comment" x="434" y="140" text="cc40"/>
+   <comment type="patch/comment" x="434" y="168" text="cc41"/>
+   <obj type="audio/inconfig" uuid="9a80ef3c19f2a8f81da3a3b7c1c44d18126b97d9" name="inconfig_1" x="686" y="182">
+      <params/>
+      <attribs>
+         <combo attributeName="gain" selection="0dB"/>
+         <combo attributeName="boost" selection="0dB"/>
+         <combo attributeName="mode" selection="Stereo"/>
+      </attribs>
+   </obj>
+   <obj type="math/+" uuid="faedbea4612d9bd3644d6d3bf31946d848a70e19" name="+_7" x="588" y="196">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="audio/outconfig" uuid="eace67e3304afaa1bb695b444e9345f2d8adaf00" name="outconfig_1" x="1092" y="196">
+      <params/>
+      <attribs>
+         <combo attributeName="headphones" selection="-12dB"/>
+         <combo attributeName="mode" selection="Stereo"/>
+      </attribs>
+   </obj>
+   <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="square_1" x="42" y="210">
+      <params>
+         <frac32.s.map name="pitch" value="-14.299999713897705"/>
+      </params>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="434" y="210" text="cc42"/>
+   <comment type="patch/comment" x="434" y="238" text="cc43"/>
+   <comment type="patch/comment" x="434" y="280" text="cc44"/>
+   <comment type="patch/comment" x="1008" y="280" text="cc16..18"/>
+   <comment type="patch/comment" x="1008" y="294" text="dragons breath"/>
+   <patchobj type="patch/object" uuid="fe3951fb-3ce5-4aa2-b1fa-6055cc578737" name="recv_4" x="714" y="308">
+      <params/>
+      <attribs>
+         <objref attributeName="srcA" obj="fromKIK"/>
+         <objref attributeName="srcB" obj="fromEXT"/>
+      </attribs>
+      <object id="patch/object" uuid="fe3951fb-3ce5-4aa2-b1fa-6055cc578737">
+         <sDescription>fetches values from node</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets>
+            <frac32buffer name="outA"/>
+            <frac32buffer name="outB"/>
+         </outlets>
+         <displays/>
+         <params/>
+         <attribs>
+            <objref name="srcA"/>
+            <objref name="srcB"/>
+         </attribs>
+         <includes/>
+         <code.srate><![CDATA[outlet_outA = attr_srcA._outlet[buffer_index];
+outlet_outB = attr_srcB._outlet[buffer_index];]]></code.srate>
+      </object>
+   </patchobj>
+   <obj type="math/+" uuid="faedbea4612d9bd3644d6d3bf31946d848a70e19" name="+_4" x="840" y="308">
+      <params/>
+      <attribs/>
+   </obj>
+   <patchobj type="patch/object" uuid="3a7ecec7-1c8c-4b67-bb12-c4342132acfd" name="fx_4" x="910" y="308">
+      <params>
+         <frac32.u.map name="dry" MidiCC="16" value="64.0"/>
+         <frac32.u.map name="wet" MidiCC="17" value="32.0"/>
+      </params>
+      <attribs/>
+      <object id="patch/object" uuid="3a7ecec7-1c8c-4b67-bb12-c4342132acfd">
+         <sDescription>mixer with named dials</sDescription>
+         <inlets>
+            <frac32buffer name="bus_in" description="input with unity gain"/>
+            <frac32buffer name="in1" description="input 1"/>
+            <frac32buffer name="in2" description="input 2"/>
+         </inlets>
+         <outlets>
+            <frac32buffer name="out" description="mix out"/>
+         </outlets>
+         <displays/>
+         <params>
+            <frac32.u.map.gain name="dry">
+               <DefaultValue v="32.0"/>
+            </frac32.u.map.gain>
+            <frac32.u.map.gain name="wet">
+               <DefaultValue v="32.0"/>
+            </frac32.u.map.gain>
+         </params>
+         <attribs/>
+         <includes/>
+         <code.srate><![CDATA[int32_t accum = ___SMMUL(inlet_in1,param_dry);
+   accum = ___SMMLA(inlet_in2,param_wet,accum);
+;   outlet_out=  __SSAT(inlet_bus__in + (accum<<1),28);]]></code.srate>
+      </object>
+   </patchobj>
+   <obj type="jt/granular/grainverb" uuid="aaafab49-927b-4660-a360-ed30d1a7e643" name="grainverb_1" x="1008" y="308">
+      <params>
+         <frac32.u.map name="amount" value="64.0"/>
+         <frac32.u.map name="delay" value="2.5"/>
+         <frac32.u.map name="spread" value="3.9499998092651367"/>
+         <frac32.u.map name="fdbk" MidiCC="18" value="42.99999952316284"/>
+      </params>
+      <attribs>
+         <combo attributeName="grains" selection="16"/>
+         <combo attributeName="grainlength" selection="1024"/>
+         <combo attributeName="window" selection="smoothstep_ext"/>
+         <combo attributeName="size" selection="16384 (341ms)"/>
+      </attribs>
+   </obj>
+   <comment type="patch/comment" x="868" y="378" text="cc16"/>
+   <comment type="patch/comment" x="42" y="420" text="12pots 4tog for EEEP"/>
+   <comment type="patch/comment" x="868" y="420" text="cc17"/>
+   <comment type="patch/comment" x="42" y="448" text="panel objects must be the LOWEST objects in the java patch editor"/>
+   <comment type="patch/comment" x="42" y="462" text="- these interact with each other using hacky-kludgy-API stuff"/>
+   <comment type="patch/comment" x="448" y="462" text="must use firmware 3BBA8761"/>
+   <comment type="patch/comment" x="42" y="476" text="- so make sure they appear in order [LCD][Control][Midi][Assign]"/>
+   <comment type="patch/comment" x="448" y="476" text="for stable midi system exclusive"/>
+   <patchobj type="patch/object" uuid="aeda73fe-cee0-418f-b4b6-0cce5c671f53" name="panelLCD" x="42" y="490">
+      <params/>
+      <attribs/>
+      <object id="patch/object" uuid="aeda73fe-cee0-418f-b4b6-0cce5c671f53">
+         <sDescription>configures I2C LCD screen using pins PB8=SCL PB9=SDA</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[#define KS_LCD_ADDR 0x3F // 0x3F or 0x7E (with ADDR<<1)
+
+// ///////////////////////////////////////////////////////
+// local copy of values discovered in companion 'panelAssign'
+// array of label text - sixteen characters per label
+// exactly NPEXCH labels, indexed as per patchMeta.pPExch
+char labels[NPEXCH][16];
+
+// ///////////////////////////////////////////////////////
+// local copy of value stored in companion 'panelMidi'
+// for which parameter is 'current' received or transmitted
+// k-rate pulls currentPExIdx value from companion 'panelMidi'
+// the LCD thread handles updating and checking previouPExIDx
+int32_t currentPExIdx; // valid range 0 to NPEXCH
+int32_t previouPExIdx; // track changes to currentPExIdx
+
+// ///////////////////////////////////////////////////////
+// pointer to array stored in companion 'panelAssign'
+int8_t* ccAssignments = 0; //
+
+// pointer to array stored in companeion 'panelMidi'
+int8_t* prevMidiValue = 0; //
+
+// ///////////////////////////////////////////////////////
+// local copy of values stored in companion 'panelControl'
+// k-rate pulls values from companion 'panelControl' 
+int8_t currentPage; // valid range 0 to 7
+int8_t previousPage; // track changes to page
+
+// ///////////////////////////////////////////////////////
+// set up the thread for the i2c LCD screen comms
+msg_t ThreadX2(){
+  setup();
+  while(!chThdShouldTerminate()){
+     loop();
+     chThdSleepMilliseconds(1);
+  }
+  chThdExit((msg_t)0);
+}
+static msg_t ThreadX(void *arg) {
+  ((attr_parent *)arg)->ThreadX2();
+}
+WORKING_AREA(waThreadX, 1024);
+Thread *Thd;
+
+// ///////////////////////////////////////////////////////
+
+// commands
+#define LCD_CLEARDISPLAY 0x01
+#define LCD_RETURNHOME 0x02
+#define LCD_ENTRYMODESET 0x04
+#define LCD_DISPLAYCONTROL 0x08
+#define LCD_CURSORSHIFT 0x10
+#define LCD_FUNCTIONSET 0x20
+#define LCD_SETCGRAMADDR 0x40
+#define LCD_SETDDRAMADDR 0x80
+
+// flags for display entry mode
+#define LCD_ENTRYRIGHT 0x00
+#define LCD_ENTRYLEFT 0x02
+#define LCD_ENTRYSHIFTINCREMENT 0x01
+#define LCD_ENTRYSHIFTDECREMENT 0x00
+
+// flags for display on/off control
+#define LCD_DISPLAYON 0x04
+#define LCD_DISPLAYOFF 0x00
+#define LCD_CURSORON 0x02
+#define LCD_CURSOROFF 0x00
+#define LCD_BLINKON 0x01
+#define LCD_BLINKOFF 0x00
+
+// flags for display/cursor shift
+#define LCD_DISPLAYMOVE 0x08
+#define LCD_CURSORMOVE 0x00
+#define LCD_MOVERIGHT 0x04
+#define LCD_MOVELEFT 0x00
+
+// flags for function set
+#define LCD_8BITMODE 0x10
+#define LCD_4BITMODE 0x00
+#define LCD_2LINE 0x08
+#define LCD_1LINE 0x00
+#define LCD_5x10DOTS 0x04
+#define LCD_5x8DOTS 0x00
+
+// flags for backlight control
+#define LCD_BACKLIGHT 0x08
+#define LCD_NOBACKLIGHT 0x00
+
+// flags for lower 4 bits of the i2c expander
+#define EXPAND_RS 1 << 0
+#define EXPAND_RW 1 << 1
+#define EXPAND_CS 1 << 2
+#define EXPAND_BL 1 << 3
+
+// macros for setting and clearing bits
+#define EXPAND_BIT(n)    1 << n
+#define EXPAND_HIGHER(n) (n & 0xF0)
+#define EXPAND_LOWER(n)  ((n & 0x0F) << 4)
+
+// ///////////////////////////////////////////////////////
+void dispNumCurrentPage(void){	
+	uint8_t units = currentPage%10;
+	
+	char unitsAscii = 48 + units; // ascii offset
+	
+	send( (LCD_SETDDRAMADDR | 15), 0);
+	send( unitsAscii , 1 );
+}
+
+// ///////////////////////////////////////////////////////
+void dispVal(void){
+	if( ccAssignments == 0 ) return; // nullptr, abort
+	if( currentPExIdx < 0  ) return;
+	if( currentPExIdx > NPEXCH  ) return;
+	
+	uint8_t ccNum = ccAssignments[currentPExIdx];
+	uint8_t ccVal = prevMidiValue[ccNum];
+	
+	uint8_t units = ccVal%10;
+	uint8_t  tens = (ccVal/10)%10;
+	uint8_t hunds = (ccVal/100)%10;
+	
+	char hundsAscii = 48 + hunds; // ascii offset
+	char  tensAscii = 48 + tens;  // ascii offset
+	char unitsAscii = 48 + units; // ascii offset
+	
+	send( (LCD_SETDDRAMADDR | 11), 0);
+	send( hundsAscii , 1 );
+	send( tensAscii  , 1 );
+	send( unitsAscii , 1 );
+}
+
+void dispLabel(void) {
+	char defaultLabel[16] = "[none]         ";
+	char* string = &defaultLabel[0];
+
+	if( currentPExIdx < 0  ) return;
+	if( currentPExIdx > NPEXCH  ) return;
+	
+	// a control is selected? find the label
+	string = labels[currentPExIdx];
+	
+	// but if the control label is blank
+	if ( string[0] == '\0' ) {
+	  string = &defaultLabel[0];
+	}
+
+	// display the name on the screen
+	send( (LCD_SETDDRAMADDR | 0), 0); // cursor to left
+	uint8_t pos = 0;
+	while( *string != '\0' && pos < 16 ) {
+		this->send( *string , 1 );
+		pos++;
+		string++;
+	} 
+	
+	// erase any old remaining label text
+	while( pos < 12 ) {
+		this->send( ' ' , 1 );
+		pos++;
+	}
+}
+
+void writeString(char* string, uint8_t pos){
+	
+	send( (LCD_SETDDRAMADDR | pos), 0); // set cursor
+	
+	int32_t iteration = 16;
+	while( iteration>0 ){
+		if (*string == 0) break;
+		send( *string, 1 ); // send data
+		string++;
+		iteration--;	
+	}
+}
+
+
+void send(uint8_t value, uint8_t reg){
+     // send reg=0 (RS=low=command)
+     // send reg=1 (RS=high=display)
+	write4bits( EXPAND_HIGHER(value) | reg | EXPAND_BL );
+	write4bits( EXPAND_LOWER(value)  | reg | EXPAND_BL );
+}
+
+
+// transmits a byte to the expander
+void expanderWrite(uint8_t value){
+	// for performance reasons chibios i2cMasterTransmiTimeout()
+	// requires data to be transmitted over i2c bus in SRAM
+	static uint8_t txbuf[1] __attribute__ ((section (".sram2")));
+	static systime_t timeout = MS2ST(50); // time in sys ticks for 50 msec
+
+	txbuf[0] = value;
+	i2cAcquireBus( &I2CD1 );
+	i2cMasterTransmitTimeout(&I2CD1, KS_LCD_ADDR, txbuf, 1, 0, 0, timeout);
+	i2cReleaseBus( &I2CD1 );
+}
+
+void pulseEnable(uint8_t value){
+	static systime_t usec1 = US2ST(1); // time in sys ticks for 1 usec
+	static systime_t usec50 = US2ST(50); // time in sys ticks for 50 usec
+	
+	expanderWrite(value | EXPAND_CS); // enable pin is high
+	chThdSleep(usec1);               // enable pulse must be >450ns
+
+	expanderWrite(value & ~EXPAND_CS); // enable pin is low
+	chThdSleep(usec50);               // commands need > 37us to settle	
+}
+
+// writes to the expander (all 8 bits actually) pulsing the CS(Enable) pin
+void write4bits(uint8_t value){
+	expanderWrite(value);
+	pulseEnable(value);
+}
+
+// ///////////////////////
+
+void loop(void){	
+
+	// if new page selected
+	if( previousPage != currentPage ){
+	    previousPage  = currentPage;  // for next time
+
+	    dispNumCurrentPage();         // repaint
+	}
+
+	// if a new parameter is selected
+	if( previouPExIdx != currentPExIdx ){	
+	    previouPExIdx  = currentPExIdx; // update for next time
+
+	  dispLabel();
+	}
+
+	dispVal();               // may not repaint
+}
+
+// //////////////////////////////
+
+
+void setup(void){
+
+	chThdSleepMilliseconds(5); // min 4.1 msec
+
+	// begin commands by turning RS, RW and CS(E) pins low
+	expanderWrite(0);
+	chThdSleepMilliseconds(450);
+
+	//put the LCD into 4 bit mode
+	// this is according to the hitachi HD44780 datasheet
+	// figure 24, pg 46
+	write4bits(0x03<<4); 
+	chThdSleepMilliseconds(5); // min 4.1 msec
+	write4bits(0x03<<4); 
+	chThdSleepMilliseconds(5); // min 4.1 msec
+	write4bits(0x03<<4);
+	chThdSleepMilliseconds(1);
+
+	write4bits(0x02<<4); // set 4-bit interface (D4 D5 D6 D7 only)
+
+	// desired function set
+	send(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS, 0);
+
+	// desired display mode
+	send(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF, 0);
+
+	// clear off the display
+	send(LCD_CLEARDISPLAY, 0);
+	chThdSleepMilliseconds(5); // clear takes some time!
+
+	send(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT, 0);
+
+	// reset cursor
+	send(LCD_RETURNHOME, 0);
+	chThdSleepMilliseconds(10);
+
+	writeString( (char*)"use USB midi", 0 );
+	chThdSleepMilliseconds(1500);
+}]]></code.declaration>
+         <code.init><![CDATA[// currentPExIdx is overriden by K-rate code
+// we pull currentPExIdx value stored in companion 'panelMidi'
+// the LCD thread handles updating and checking previouPExIDx
+previouPExIdx = currentPExIdx = 0; 
+
+// currentPage is overridden in K-rate code
+// we pull the values from companion 'panelControl'
+// the LCD thread handles updating and checking previousPage
+previousPage = currentPage = 0;
+
+// point to ccAssignments[] array in companion 'panelAssign'
+ccAssignments = parent->instancepanelAssign_i.ccAssignments; 
+
+// point to prevMidiValue[] array in companion 'panelMidi'
+prevMidiValue = parent->instancepanelMidi_i.prevMidiValue;
+
+// set up all labels to terminate at zeroth character
+for(int label=0; label<NPEXCH; label++){
+	//strncpy(labels[bank][label],"-",15);
+	//memset(&labels[label][0], 0, 16);
+	labels[label][0] = 0;
+}
+
+// setup the i2c pins
+palSetPadMode(GPIOB, 8, PAL_MODE_ALTERNATE(4)|PAL_STM32_PUDR_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SCL
+palSetPadMode(GPIOB, 9, PAL_MODE_ALTERNATE(4)|PAL_STM32_PUDR_PULLUP|PAL_STM32_OTYPE_OPENDRAIN);// SDA
+static const I2CConfig i2cfg = {
+    OPMODE_I2C,
+    400000,
+    FAST_DUTY_CYCLE_2,
+};
+i2cStart(&I2CD1, &i2cfg);
+
+// set up the thread for the i2c LCD screen comms
+Thd = chThdCreateStatic(
+		waThreadX, 
+		sizeof(waThreadX),
+		NORMALPRIO, 
+		ThreadX, 
+		(void *)this);]]></code.init>
+         <code.dispose><![CDATA[chThdTerminate(Thd);
+chThdWait(Thd);
+
+i2cStop(&I2CD1);
+palSetPadMode(GPIOB, 8, PAL_MODE_INPUT_ANALOG);
+palSetPadMode(GPIOB, 9, PAL_MODE_INPUT_ANALOG);
+LogTextMessage("disposed");]]></code.dispose>
+         <code.krate><![CDATA[// get currentPExIDx from companion 'panelMidi'
+currentPExIdx = parent->instancepanelMidi_i.currentPExIdx;
+currentPage   = parent->instancepanelControl_i.currPage;]]></code.krate>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="56bfbb06-3642-4dcc-8f0b-52d27f24c98c" name="panelControl" x="112" y="490">
+      <params>
+         <bool32.tgl name="s" MidiCC="122" value="5825"/>
+      </params>
+      <attribs/>
+      <object id="patch/object" uuid="56bfbb06-3642-4dcc-8f0b-52d27f24c98c">
+         <sDescription>our panel layout is 12pots 4togs here
+&apos;s&apos; control is mapped to MIDI CC 122 (local control)</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays>
+            <int32.label name="P" description="current &apos;page&apos; of controls"/>
+            <int32.label name="C" description="current &apos;last touched&apos; control"/>
+         </displays>
+         <params>
+            <bool32.tgl name="s"/>
+         </params>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[/* we tx INTERNAL MIDI CC for potentiometers on adc inputs 0..11 here
+   ...causing root midi handler to modify PExch[]->finalvalue nicely...
+   ...and companion 'panelMidi' to spot changes and tx EXTERNAL MIDI CC
+ */   
+
+int32_t smoothAdcVals[12];  // mechanism to detect panel control movement
+int8_t  ctrlIsHooked[12];   // mechanism to inhibit MIDI tx on page change
+int32_t currControl;       // recently 'touched' control 0..11
+int32_t currPage;          // recently 'focused' page 0..7
+int32_t prevPage;          // mechanism to inhibit MIDI tx on page change
+int32_t* ccToPExLookup;    // pointer to [] in companion 'panelAssign'
+int8_t* prevMidiValue;     // pointer to [] in companion 'panelMidi'
+int8_t  prevTog;           // bitfield for panel toggle switches]]></code.declaration>
+         <code.init><![CDATA[for(int i=0; i<12; i++ ){ ctrlIsHooked[i] = 0; }             // unhook
+for(int i=0; i<12; i++ ){ smoothAdcVals[i] = adcvalues[i]; } // identical
+ccToPExLookup = parent->instancepanelAssign_i.ccToPExLookup; // [] pointer
+prevMidiValue = parent->instancepanelMidi_i.prevMidiValue;   // [] pointer
+currControl   = -1;                                          // unset
+currPage      = -1;									 // default page is "1" cc16..23
+prevPage      = 0;
+prevTog       = 0;
+palSetPadMode(GPIOB, 6, PAL_MODE_INPUT_PULLUP);              // panel toggle switches
+palSetPadMode(GPIOB, 4, PAL_MODE_INPUT_PULLUP);
+palSetPadMode(GPIOB, 3, PAL_MODE_INPUT_PULLUP);
+palSetPadMode(GPIOC, 7, PAL_MODE_INPUT_PULLUP);]]></code.init>
+         <code.krate><![CDATA[if( 1 ){ // always?
+  int tog =  (palReadPad(GPIOB, 6)<<3)
+           | (palReadPad(GPIOB, 4)<<2)
+           | (palReadPad(GPIOB, 3)<<1)
+           |  palReadPad(GPIOC, 7);   // bitfield for panel toggle switches in pull-up mode
+
+  if( prevTog!=tog )               // detect changes
+  {
+    prevTog = tog;                 // cache for next time
+
+    /*
+    // NOSE_MAUD PANEL CONTROL MAP
+    if( 14==tog ) 
+    {
+      MidiSend2((midi_device_t) MIDI_DEVICE_INTERNAL, 1, MIDI_PROGRAM_CHANGE + MIDICHANNEL, 127 );
+    }
+    */
+
+    // EEP PANEL CONTROL MAP
+    if( 15==tog ) currPage = 0; // neutral
+    else if( 14==tog ) currPage = 1; // lower left
+    else if( 13==tog ) currPage = 2; // lower right
+    else if( 11==tog ) currPage = 3; // upper left
+    else if(  7==tog ) currPage = 4; // upper right
+    else if( 10==tog ) currPage = 5; // upper left and lower left
+    else if(  9==tog ) currPage = 6; // upper left and lower right
+    else if(  6==tog ) currPage = 7; // upper right and lower left
+    else if(  5==tog )               // upper right and lower right = invoke state dump
+    {
+      MidiSend2((midi_device_t) MIDI_DEVICE_INTERNAL, 1, MIDI_PROGRAM_CHANGE + MIDICHANNEL, 127 );
+    }
+    
+  }
+}
+
+if(param_s){
+
+   // button press requested to change page?
+   if( prevPage != currPage ){                
+       prevPage = currPage;				 // update for next time
+       currControl = -1;					 // flag
+       for(int c=0; c<12; c++){ ctrlIsHooked[c] = 0; } // unhook
+   }
+
+   // control 'pages' offset the base ccNum for the twelve controls
+   int ccOffset = 1;                          // range 1..119
+   if( currPage == 0 ) ccOffset = 1;          // cc01..12
+   if( currPage == 1 ) ccOffset = 16;         // cc16..27
+   if( currPage == 2 ) ccOffset = 28;         // cc28..39
+   if( currPage == 3 ) ccOffset = 40;         // cc40..51
+   if( currPage == 4 ) ccOffset = 52;         // cc52..63
+   if( currPage == 5 ) ccOffset = 64;         // cc64..75
+   if( currPage == 6 ) ccOffset = 76;         // cc76..87
+   if( currPage == 7 ) ccOffset = 88;         // cc88..99
+
+   // controls that are 'touched' transmit internal MIDI cc
+   for(int ctrl=0; ctrl<12; ctrl++){	      // range 0..11
+     int midiCC    = ctrl + ccOffset;         // range 1..119
+     if( midiCC < 1   ) midiCC = 1;
+     if( midiCC > 119 ) midiCC = 119;
+     int midiValue = __USAT(adcvalues[ctrl]>>5,7); // range 0..127
+
+     // we only consider controls that are 'touched'
+	int32_t c = adcvalues[ctrl]<<7;          // 'c' short for current
+     int32_t *s = &smoothAdcVals[ctrl];       // 's' short for smoothed
+     *s = ___SMMLA(*s-c,(-1<<23),*s);         // apply lowpass with mulacc
+     int32_t delta   = abs(*s - c);           // compute difference
+     int32_t thresh  = 20000;                 // broad threshold for movement
+
+     // PEx changes from java editor, ext MIDI, or panel controls shall update
+	// a prevMidiValue[] which is stored in companion 'panelMidi' (as below)
+	// such that we are either 'hooked' or not 
+     if( ctrlIsHooked[ctrl] ) thresh = 5000;  // fine threshold for movement     
+     int8_t touched = ( delta > thresh );     // movement?
+
+     if( touched ){
+	   currControl = ctrl;
+
+	   // remember that companion 'panelLCD' is monitoring 'panelMidi'
+	   // for changes to the currentPExIdx. we do this to know which 
+	   // text label to draw for the currently 'touched' control... 
+	   // we must therefore update 'panelMidi' currentPExIdx here so that
+	   // 'panelMidi' can replace the value if a midi message arrives
+	   // and if the PEx value changes via the java editor for example
+	   parent->instancepanelMidi_i.currentPExIdx = ccToPExLookup[ midiCC ];
+
+	   // remember also that prevMidiValue[] is stored in companion 'panelMidi'
+	   // (as above) PEx changes from java editor, ext MIDI, or panel controls
+	   // will update this prevMidiValue such that we are either 'hooked' or not 
+	   if( midiValue == prevMidiValue[midiCC] ){ ctrlIsHooked[ctrl] = 1; }
+
+        if( ctrlIsHooked[ctrl] ){
+           MidiSend3((midi_device_t) MIDI_DEVICE_INTERNAL, 1, MIDI_CONTROL_CHANGE + MIDICHANNEL, midiCC, midiValue);
+        }//hooked?	
+	
+     }//currControl valid?
+   }//for
+}//if
+
+// update displays
+disp_C = currControl;
+disp_P = currPage;]]></code.krate>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="707af941-b436-414f-bb29-24875b7db11d" name="panelMidi" x="182" y="490">
+      <params>
+         <bool32.mom name="report" value="0"/>
+      </params>
+      <attribs/>
+      <object id="patch/object" uuid="707af941-b436-414f-bb29-24875b7db11d">
+         <sDescription>see &apos;local data&apos;, &apos;init&apos;, &apos;krate&apos;, and &apos;midi&apos; code</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays>
+            <int32.label name="cidx"/>
+         </displays>
+         <params>
+            <bool32.mom name="report"/>
+         </params>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[/*
+ * although we are called 'panelMidi' it is infact the java editor
+ * code that handles the rx of MIDI CC messages to set PEx values
+ * here we tx MIDI CC when a PExch[]->finalvalue changes and we
+ * share values with various other companion 'panel...' objects
+ * 
+ * absolutely requires companion 'panelAssign' object
+ * optional 'panelLCD' and optional 'panelControl'
+ */
+// pointers to data held in companion 'panelAssign' object
+int8_t *ccAssignments = NULL; // detected MIDI CC numbers
+int32_t *minimumPExVal = NULL; // detected minimum range
+int32_t *maximumPExVal = NULL; // detected maximum range
+
+int32_t *prevPExValues = NULL; // mechanism to spot PExch[] changes
+int8_t  prevMidiValue[127]; // mechanism to spot MIDI CC changes
+
+int32_t krateTimer; // mechanism to restrit MIDI transmission rate
+
+int32_t MINBIPOLAR = -1<<27; // used for parameter range checking
+int32_t MAXBIPOLAR =  1<<27; 
+int32_t MINUNIPOLAR = 0;
+int32_t MAXUNIPOLAR = 1<<27;
+
+int32_t currentPExIdx; // companion 'panelLCD' uses this value
+
+int     report_ntrig;  // report state variable, see k-rate code]]></code.declaration>
+         <code.init><![CDATA[krateTimer = 0;    // mechanism used to slow k-rate processing
+currentPExIdx = 0; // companion 'panelLCD' uses this value
+ccAssignments = parent->instancepanelAssign_i.ccAssignments;
+prevPExValues = parent->instancepanelAssign_i.prevPExValues;
+minimumPExVal = parent->instancepanelAssign_i.minimumPExVal;
+maximumPExVal = parent->instancepanelAssign_i.maximumPExVal;
+
+// invalidate prevPExValues triggering a complete state dump
+for(int i=0; i<NPEXCH; i++){ prevPExValues[i] = -1<<31; }
+
+// companions 'panelControl' and 'panelLCD' use these values
+// K-rate code populates when PEx[] value changes are detected
+for(int i=0; i<127; i++){ prevMidiValue[i] = 0; }
+
+report_ntrig = 0;]]></code.init>
+         <code.krate><![CDATA[if( ++krateTimer < 150 ) return;          // process slower than krate
+krateTimer = 0;                           // reset timer for next time
+
+// no further processing when panelAssign is discovering parameters
+if( parent->instancepanelAssign_i.isDiscovering ) return;
+
+// no further processing when sysexReport is reporting
+if( parent->instancesysexReport_i.isReporting ) return;
+
+for(int i=0; i<NPEXCH; i++){              // for every param in PExch[]
+	if( ccAssignments[i] < 0 ) continue; // if no cc assignment, advance
+	
+	ParameterExchange_t* PEx = &patchMeta.pPExch[i]; // point to param
+	
+	if( prevPExValues[i] != PEx->modvalue ){       // did value change?
+		prevPExValues[i] = PEx->modvalue;         // update for next time
+
+		currentPExIdx = i;					  // panelLCD uses this value
+
+		int midiValue = __USAT(PEx->modvalue,7);  // range 0..127
+		
+		if( minimumPExVal[i] == MINBIPOLAR &&
+		    maximumPExVal[i] == MAXBIPOLAR) { // do bipolar2unipolar conversion?
+			int bip2uni = (PEx->modvalue>>1) + (1<<26); // half plus offset
+			midiValue = __USAT(bip2uni>>20,7);     // range 0..127
+		}
+		else if( minimumPExVal[i] == MINUNIPOLAR &&
+			    maximumPExVal[i] == MAXUNIPOLAR ) { // do toggle conversion?
+			midiValue = __USAT(PEx->modvalue>>20,7);
+		}		
+		
+		int midiCC = ccAssignments[i];
+		
+		instancemidiout__1::tx3Byte( MIDI_CONTROL_CHANGE + MIDICHANNEL, midiCC&0x7F, midiValue&0x7F ); //MidiSend3...
+		
+		// companions 'panelControl' and 'panelLCD' use this value
+		prevMidiValue[midiCC] = midiValue;
+	}//if
+}//for
+
+disp_cidx = currentPExIdx;]]></code.krate>
+         <code.midihandler><![CDATA[// no further processing when panelAssign is discovering parameters
+if( parent->instancepanelAssign_i.isDiscovering ) return;
+
+// pgm127 triggers statedump
+if( status==(MIDI_PROGRAM_CHANGE+MIDICHANNEL) && data1==127 ){
+
+    // invalidate prevPExValues triggering a state report in k-rate code
+    for(int i=0; i<NPEXCH; i++){ prevPExValues[i] = -1<<31; }
+}]]></code.midihandler>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="0425637c-4a3b-4efd-b19f-7bbe8c9a7dbc" name="panelAssign" x="252" y="490">
+      <params/>
+      <attribs/>
+      <object id="patch/object" uuid="0425637c-4a3b-4efd-b19f-7bbe8c9a7dbc">
+         <sDescription>run-time detection of patch parameters with MIDI CC assignments. Values detected here are shared among companion &apos;panel...&apos; objects</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs/>
+         <includes/>
+         <code.declaration><![CDATA[/* at run-time we detect parameters in PExch[] that have been
+   configured to respond to MIDI CC with the Java editor
+   our findings may be shared with companion 'panel...' objects
+*/
+
+// companions 'panelControl' and 'panelMidi' use these lookup 
+// tables know which PExIdx to use for a given midi CC number
+// and to know which CC number is assigned to a given PExIdx
+int8_t  ccAssignments[NPEXCH]; // detected MIDI CC for PExId
+int32_t ccToPExLookup[127];    // detected PExId for MIDI CC
+
+int32_t initialValues[NPEXCH]; // initial values from PExch[]
+int32_t prevPExValues[NPEXCH]; // mechanism to spot PExch[] changes
+int32_t minimumPExVal[NPEXCH]; // detected minimum values
+int32_t maximumPExVal[NPEXCH]; // detected maximum values
+const char* nameForPExVal[NPEXCH]; // detected names
+bool    isDiscovering = false;
+
+void ccDetect(ParameterExchange_t* PEx, int PExIdx){
+	for(int cc=1; cc<119; cc++)
+	{
+      // try a low midi value
+	 MidiSend3((midi_device_t) MIDI_DEVICE_INTERNAL, 1, MIDI_CONTROL_CHANGE + MIDICHANNEL, cc, 127);
+	 if( initialValues[PExIdx] != PEx->modvalue ){ ccAssignments[PExIdx] = cc; break; }
+
+	 // try a high midi value
+	 MidiSend3((midi_device_t) MIDI_DEVICE_INTERNAL, 1, MIDI_CONTROL_CHANGE + MIDICHANNEL, cc, 0);
+	 if( initialValues[PExIdx] != PEx->modvalue ){ ccAssignments[PExIdx] = cc; break; }
+	}
+}
+
+void discoverParameters(){
+// display count of paramters in the patch
+//LogTextMessage("patchMeta.numPEx: %d", patchMeta.numPEx);
+//LogTextMessage("ObjectKvpRoot.apvp.length: %d", ObjectKvpRoot->apvp.length);
+
+// ////////////////////////////////////////////////////////
+// attempt to detect a MIDI CC assignment made by the Java editor
+extern struct KeyValuePair *ObjectKvps[];
+unsigned int rootPExIdx=0;  // index used for PExch[] array
+bool shouldAbort = false;
+do{
+	ParameterExchange_t* PEx = &patchMeta.pPExch[rootPExIdx];
+	KeyValuePair* kvp = 0;          // may remain nullptr
+
+	// parent sub-patch relationship?
+	if( PEx->pfunction == PropagateToSub ){ PEx = (ParameterExchange_t*) PEx->finalvalue; } 
+	
+	// setup
+	nameForPExVal[rootPExIdx] = "mysteryPExVal";
+	prevPExValues[rootPExIdx] = -1;
+	minimumPExVal[rootPExIdx] = -1;
+	maximumPExVal[rootPExIdx] = -1;
+	ccAssignments[rootPExIdx] = -1;
+	ccDetect(PEx, rootPExIdx);      // modifies ccAssignments[]	
+	chThdSleepMilliseconds(10);
+	restoreParameters();
+
+	// try to locate this PEx ipValuePair KeyValuePair in ObjectKvps[]
+	// this will only succed if KVP_RegisterObject() and SetKVP_IPVP()
+	// has caused the PEx to be registered and assigned, but the java
+	// editor (v1.0.12) does not register some params, unfortunately
+	for(int k=0; k<ObjectKvpRoot->apvp.length; k++){ // all registered ObjectKvps[]
+	   if( ObjectKvps[k]->kvptype == KVP_TYPE_IPVP ){// is ipvp?
+    	     if( PEx == ObjectKvps[k]->ipvp.PEx ){       // match!
+	 	  kvp = ObjectKvps[k];
+    	     }//match?
+	   }//ipvp?
+	}//for
+
+	// try to set isBipolarPExV[] from ipvp.minvalue .maxvalue
+	if( kvp ){                                      // may be nullptr
+	  minimumPExVal[rootPExIdx] = kvp->ipvp.minvalue;
+	  maximumPExVal[rootPExIdx] = kvp->ipvp.maxvalue;
+	  nameForPExVal[rootPExIdx] = kvp->keyname;
+	}
+
+	// if ccDetect() has assigned a valid ccAssignment[] entry 
+	if( ccAssignments[rootPExIdx]>=1 && ccAssignments[rootPExIdx]<=119 ){
+		
+	  //LogTextMessage("CC%d %x..%x i%x (%s) PEx[%d]",
+	  //   ccAssignments[rootPExIdx],
+	  //   minimumPExVal[rootPExIdx],
+	  //   maximumPExVal[rootPExIdx],
+	  //   initialValues[rootPExIdx],
+       //   nameForPExVal[rootPExIdx],
+	  //   rootPExIdx
+	  //   );
+
+	     // companions 'panelControl' and 'panelMidi' use these lookup 
+	     // tables know which PExIdx to use for a given midi CC number
+	     // and to know which CC number is assigned to a given PExIdx
+	     ccToPExLookup[ ccAssignments[rootPExIdx] ] = rootPExIdx;
+	}
+
+	// copy param name into companion 'panelLCD' labels[]
+	// we copy rather than point at nameForPExVal[] directly
+	// because we can then make dynamic abbreviations easily
+	strncpy(parent->instancepanelLCD_i.labels[rootPExIdx], 
+	        nameForPExVal[rootPExIdx], 14);
+	
+	rootPExIdx++;
+	if( rootPExIdx>=NPEXCH ) shouldAbort=true;
+	
+}while(!shouldAbort);
+}// end discoverParameters()
+
+// ////////////////////////////////////////////////////////
+// restore values modified ccDetect() in discoverParameters()
+void restoreParameters(){
+  for(int pidx=0; pidx<NPEXCH; pidx++){
+  	ParameterExchange_t* PEx = &patchMeta.pPExch[pidx];
+  	PExParameterChange( PEx, initialValues[pidx], 0xFFFD );
+  }//for
+}// end restoreParameters)
+
+void getinitParameters(){ 
+  for(int pidx=0; pidx<NPEXCH; pidx++){
+	ParameterExchange_t* PEx = &patchMeta.pPExch[pidx];
+	initialValues[pidx] = PEx->modvalue;
+  }
+}// end getinitParameters()
+
+msg_t ThreadX2(){
+  isDiscovering = true;
+  for(int c=0; c<127; c++){ ccToPExLookup[c] = -1; }
+  getinitParameters();
+  chThdSleepMilliseconds(1000);
+  discoverParameters();
+  isDiscovering = false;
+  chThdExit((msg_t)0);
+}
+static msg_t ThreadX(void *arg) {
+	((attr_parent *)arg)->ThreadX2();
+}
+WORKING_AREA(waThreadX, 1024);
+Thread *Thd;]]></code.declaration>
+         <code.init><![CDATA[Thd = chThdCreateStatic(waThreadX, 
+      sizeof(waThreadX), NORMALPRIO, 
+      ThreadX, (void *)this);]]></code.init>
+         <code.dispose><![CDATA[chThdTerminate(Thd);
+chThdWait(Thd);
+LogTextMessage("disposed");]]></code.dispose>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="70f70b50-8f58-4c07-8678-85f3ea27b76b" name="panelREADME" x="322" y="490">
+      <params/>
+      <attribs>
+         <text attributeName="readme">
+            <sText><![CDATA[README - SCROLL FOR MORE INFO
+
+panelControl handles front panel pots/buttons (cc112 'local' to en/disable)
+panelAssign detect at run-time params the Java editor assigned to a MIDI CC
+panelMidi tx cc when the PExch[]->finalvalue changes
+panelMIDI tx cc statedump when rx pgm127
+
+be aware of ext midi loopbacks!]]></sText>
+         </text>
+      </attribs>
+      <object id="patch/object" uuid="70f70b50-8f58-4c07-8678-85f3ea27b76b">
+         <sDescription>NO CODE just readme as editable text attribute</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs>
+            <text name="readme"/>
+         </attribs>
+         <includes/>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="29d6cacf-b87e-4473-984c-64b14e1033be" name="sysexReport" x="448" y="490">
+      <params/>
+      <attribs>
+         <text attributeName="ident">
+            <sText><![CDATA[syxsystem 1e 2025oct23]]></sText>
+         </text>
+      </attribs>
+      <object id="patch/object" uuid="29d6cacf-b87e-4473-984c-64b14e1033be">
+         <sDescription>midi system exclusive store and recall of patch parameters. pgm127 invokes report. see &apos;local data&apos; &apos;init&apos; &apos;midi code&apos;.</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs>
+            <text name="ident" description="identifier used for sysex messages"/>
+         </attribs>
+         <includes/>
+         <code.declaration><![CDATA[int     isReporting;   // companion 'panelMidi' checks to avoid clobbering report in progress
+
+char*   sysexident    = "attr_ident"; // our sysex header identity from text attrribute
+int     sysexidentlen = 0; // computed in setupSysexHandling()
+
+// firmware ID 0x3BBA8761 is stable and reliable for sysex
+void txSysexIdentityOnly()
+{
+  isReporting = true;
+  instancemidiout__1::tx1Byte( 0xF0 );    // our sysex header identity from text attrribute
+  
+  char* d = sysexident;
+  int   idx = 0;
+  while( *d && idx<sysexidentlen )
+  {
+    instancemidiout__1::tx1Byte( *d );
+    d++; idx++;
+  }
+  
+  instancemidiout__1::tx1Byte( 0xF7 );    // complete
+  isReporting = false;
+}
+
+void txSysex()
+{	
+  isReporting = true;
+  instancemidiout__1::tx1Byte( 0xF0 );    // our sysex header identity from text attribute
+  
+  char* d = sysexident;
+  int   idx = 0;
+  while( *d && idx<sysexidentlen )
+  {
+    instancemidiout__1::tx1Byte( *d );
+    d++; idx++;
+  }
+  	
+  for(int i=0; i<NPEXCH; i++){            // for every param in PExch[]
+
+	ParameterExchange_t* PEx = &patchMeta.pPExch[i]; // point to param
+
+	//LogTextMessage( "::::[%03d:::] %03d %02x", i, PEx->modvalue, PEx->modvalue );
+
+     uint8_t nibble[5];                      // five nibbled 7bits of one int32_t 'modvalue'
+     nibble[4] = (PEx->modvalue >> 28)&0x7F;
+     nibble[3] = (PEx->modvalue >> 21)&0x7F;
+     nibble[2] = (PEx->modvalue >> 14)&0x7F;
+     nibble[1] = (PEx->modvalue >> 7 )&0x7F;
+     nibble[0] = (PEx->modvalue      )&0x7F;
+     for( int i=0; i<5; i++ ){ instancemidiout__1::tx1Byte( nibble[i] ); }
+	
+  }//for
+
+  instancemidiout__1::tx1Byte( 0xF7 );
+  isReporting = false;
+}
+
+void rxSysex(uint8_t v)
+{
+  static int idx = 0;                         // used to derive PExIdx, range 0..NPEXCH
+  static int nibbleIdx = 0;                   // used to assemble one int32_t 'modvalue'
+  
+  if( 0xF0==v )                      idx = 0; // zero index 0xF0 sysex start
+  else if( v && v==sysexident[idx] ) idx++;   // incr index signature match (ignore null terminated string)
+  else if( 0xF7==v )                 idx = 0; // zero index 0xF7 sysex stop
+  else if( idx >= sysexidentlen )             // process data after complete header match
+  {
+      int PExIdx            = idx - sysexidentlen;      
+      static int32_t PExVal = 0;
+
+      isReporting = true; // companion 'panelMidi' checks to avoid clobbering
+
+      //LogTextMessage( "DATA[%03d:%d] %03d %02x", PExIdx, nibbleIdx, v, v );
+
+      // assemble five nibbled 7bits of one int32_t 'modvalue'
+	 if( 0==nibbleIdx ){ PExVal  = v;       }
+	 if( 1==nibbleIdx ){ PExVal += (v<<7);  }
+	 if( 2==nibbleIdx ){ PExVal += (v<<14); }
+	 if( 3==nibbleIdx ){ PExVal += (v<<21); }
+	 if( 4==nibbleIdx ){ PExVal += (v<<28); 
+
+	  //LogTextMessage( "::::[%03d:::] %03d %02x", PExIdx, PExVal, PExVal );
+
+       ParameterExchange_t* PEx = &patchMeta.pPExch[PExIdx]; // point to param
+       PExParameterChange( PEx, PExVal, 0xFFFD );
+       
+	 }
+	 if( ++nibbleIdx >= 5 ){ idx++; nibbleIdx = 0; }
+  }
+  else idx = 0; // abort
+
+  if( isReporting && 0==idx ) isReporting = false;
+}
+
+void setupSysexHandling()
+{
+  // first compute sysexidentlen, limit to 40 characters
+  for(int i=0; i<=40; i++){ sysexidentlen = i; if( 0==sysexident[i] ) break; } 
+
+  txSysex();
+  //txSysexIdentityOnly();
+  //LogTextMessage(sysexident);
+}]]></code.declaration>
+         <code.init><![CDATA[isReporting = false;
+setupSysexHandling();       // configure identity and report in console]]></code.init>
+         <code.midihandler><![CDATA[if( status==(MIDI_PROGRAM_CHANGE+MIDICHANNEL) && data1==127 ){ // pgm127 triggers statedump
+    txSysex(); // sysex handling is stable with ksoloti firmware 3BBA8761
+}
+
+if( dev==MIDI_DEVICE_INTERNAL ) return;
+if( 0==sysexidentlen ) return; // no further processing
+
+// parse sysex messages - stable with ksoloti firmware 3BBA8761
+rxSysex( status );
+rxSysex( data1 );
+rxSysex( data2 );]]></code.midihandler>
+      </object>
+   </patchobj>
+   <patchobj type="patch/object" uuid="474d7fa5-0078-4722-a79c-554675a449fd" name="midiout_1" x="518" y="490">
+      <params/>
+      <attribs>
+         <combo attributeName="USB_tx" selection=" DIN+USB"/>
+      </attribs>
+      <object id="patch/object" uuid="474d7fa5-0078-4722-a79c-554675a449fd">
+         <sDescription>wrapper for MidiSend...(), tx always DIN, optional tx DIN+USB</sDescription>
+         <author>zenpho</author>
+         <inlets/>
+         <outlets/>
+         <displays/>
+         <params/>
+         <attribs>
+            <combo name="USB_tx">
+               <MenuEntries>
+                  <string>OFF</string>
+                  <string> DIN+USB</string>
+               </MenuEntries>
+               <CEntries>
+                  <string>0</string>
+                  <string>1</string>
+               </CEntries>
+            </combo>
+         </attribs>
+         <includes/>
+         <code.declaration><![CDATA[static void tx1Byte( uint8_t st ){ // always UART DIN, can also be USB
+  MidiSendSysEx( (midi_device_t)MIDI_DEVICE_DIN, 1, &st, 1 ); 
+  if( attr_USB__tx ) MidiSendSysEx( (midi_device_t)MIDI_DEVICE_USB_DEVICE, 1, &st, 1 ); 
+}
+
+static void tx2Byte( uint8_t st, uint8_t d1 ){ // always UART DIN, can also be USB
+  MidiSend2( (midi_device_t)MIDI_DEVICE_DIN, 1, st, d1 ); 
+  if( attr_USB__tx ) MidiSend2( (midi_device_t)MIDI_DEVICE_USB_DEVICE, 1, st, d1 );
+}
+
+static void tx3Byte( uint8_t st, uint8_t d1, uint8_t d2 ) { // always UART DIN, can also be USB
+  MidiSend3( (midi_device_t)MIDI_DEVICE_DIN, 1, st, d1, d2 );
+  if( attr_USB__tx ) MidiSend3( (midi_device_t)MIDI_DEVICE_USB_DEVICE, 1, st, d1, d2 );
+}]]></code.declaration>
+      </object>
+   </patchobj>
+   <comment type="patch/comment" x="1134" y="546" text="cc18"/>
+   <comment type="patch/comment" x="182" y="560" text="LOCAL cc122"/>
+   <comment type="patch/comment" x="518" y="560" text="patch uses this for MidiSend___()"/>
+   <nets>
+      <net>
+         <source obj="or_1" outlet="o"/>
+         <dest obj="obj_1" inlet="trig"/>
+      </net>
+      <net>
+         <source obj="+_4" outlet="out"/>
+         <dest obj="grainverb_1" inlet="in"/>
+         <dest obj="fx_4" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="grainverb_1" outlet="l"/>
+         <dest obj="fx_4" inlet="in2"/>
+      </net>
+      <net>
+         <source obj="fx_4" outlet="out"/>
+         <dest obj="sum8_1" inlet="in4"/>
+      </net>
+      <net>
+         <source obj="gain_5" outlet="out"/>
+         <dest obj="fromEXT" inlet="outlet"/>
+      </net>
+      <net>
+         <source obj="recv_4" outlet="outA"/>
+         <dest obj="+_4" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="recv_4" outlet="outB"/>
+         <dest obj="+_4" inlet="in2"/>
+      </net>
+      <net>
+         <source obj="square_1" outlet="wave"/>
+         <dest obj="lfo_1" inlet="in"/>
+      </net>
+      <net>
+         <source obj="lfo_1" outlet="out"/>
+         <dest obj="or_1" inlet="i1"/>
+      </net>
+      <net>
+         <source obj="in_1" outlet="left"/>
+         <dest obj="+_7" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="in_1" outlet="right"/>
+         <dest obj="+_7" inlet="in2"/>
+      </net>
+      <net>
+         <source obj="+_7" outlet="out"/>
+         <dest obj="gain_5" inlet="in"/>
+      </net>
+      <net>
+         <source obj="note_1" outlet="gate"/>
+         <dest obj="or_1" inlet="i2"/>
+      </net>
+      <net>
+         <source obj="obj_1" outlet="out"/>
+         <dest obj="fromKIK" inlet="outlet"/>
+      </net>
+      <net>
+         <source obj="sum8_1" outlet="out"/>
+         <dest obj="out_1" inlet="left"/>
+         <dest obj="out_1" inlet="right"/>
+      </net>
+   </nets>
+   <settings>
+      <subpatchmode>no</subpatchmode>
+      <MidiChannel>2</MidiChannel>
+      <NPresets>0</NPresets>
+      <NPresetEntries>0</NPresetEntries>
+      <NModulationSources>0</NModulationSources>
+      <NModulationTargetsPerSource>0</NModulationTargetsPerSource>
+      <Author>zenpho</Author>
+      <License>zenpho</License>
+      <Attributions>zenpho</Attributions>
+   </settings>
+   <notes><![CDATA[]]></notes>
+   <windowPos>
+      <x>356</x>
+      <y>23</y>
+      <width>924</width>
+      <height>695</height>
+   </windowPos>
+</patch-1.0>
