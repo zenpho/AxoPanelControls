@@ -4,6 +4,7 @@ A hastily constructed control panel for [axoloti](https://github.com/axoloti/axo
 ![screenshot of axoloti patch](labelsystem5a.png) ![photograph of hastily constructed plywood control panel](hastypanel.png) 
 
 The [ccsystem branch](../../tree/ccsystem) presents an alternative method of nominating controls.
+The [syxsystem branch](../../tree/syxsystem) supports midi system exclusive state store + recall.
 
 # What is this?
 I find on-screen controls do not provide tactile visceral joyful control of sound. I like joyful sound... In 2016, I hastily constructed a panel with 12 rotary potentiometers, 8 push switches in an R_2R ladder to select banks of controls, and a 2x16 character display over I2C. Accompanying software (also hastilly constructed!) uses undocumented features for convenient tactile joyful etc workflow. 
@@ -47,6 +48,7 @@ See the demonstration in `labelsystem5a.axp` for suggested methods of usage and 
 Parameters inside subpatches using 'on parent' are supported. A portion of the parent identifier of the parent will be shown on the LCD. Long identifiers are truncated preserving first and last characters.
 
 The [ccsystem branch](../../tree/ccsystem) presents an alternative method of nominating controls.
+The [syxsystem branch](../../tree/syxsystem) supports midi system exclusive state store + recall.
 
 ---
 Not all parameter types are supported. I need help to support ctrl/toggle, ctrl/button, ctrl/cb16, ctrl/i, and ctrl/i radio types. CAN YOU HELP?
