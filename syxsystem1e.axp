@@ -349,7 +349,17 @@ outlet_outB = attr_srcB._outlet[buffer_index];]]></code.srate>
          <params/>
          <attribs/>
          <includes/>
-         <code.declaration><![CDATA[#define KS_LCD_ADDR 0x3F // 0x3F or 0x7E (with ADDR<<1)
+         <code.declaration><![CDATA[// ///////////////////////////////////////////////////////
+// this version for a 16x2 lcd where we use both lines :)
+// and fetches startup text from companion 'sysexReport'
+// ///////////////////////////////////////////////////////
+
+#define KS_LCD_ADDR 0x3F // 0x3F or 0x7E (with ADDR<<1)
+
+// ///////////////////////////////////////////////////////
+// startup message - configured in init code and written
+// to the LCD ports toward the end of setup() below
+char* startMsg = NULL;
 
 // ///////////////////////////////////////////////////////
 // local copy of values discovered in companion 'panelAssign'
@@ -454,9 +464,9 @@ void dispNumCurrentPage(void){
 	uint8_t units = currentPage%10;
 	
 	char unitsAscii = 48 + units; // ascii offset
-	
-	send( (LCD_SETDDRAMADDR | 15), 0);
-	send( unitsAscii , 1 );
+
+	send( (LCD_SETDDRAMADDR | 15), 0);   // upper line right-aligned
+	send( unitsAscii , 1 );              // single digit
 }
 
 // ///////////////////////////////////////////////////////
@@ -467,6 +477,9 @@ void dispVal(void){
 	
 	uint8_t ccNum = ccAssignments[currentPExIdx];
 	uint8_t ccVal = prevMidiValue[ccNum];
+	static uint8_t prevDispVal = 255;   // cached below
+
+	if( ccVal == prevDispVal ) return;
 	
 	uint8_t units = ccVal%10;
 	uint8_t  tens = (ccVal/10)%10;
@@ -476,10 +489,12 @@ void dispVal(void){
 	char  tensAscii = 48 + tens;  // ascii offset
 	char unitsAscii = 48 + units; // ascii offset
 	
-	send( (LCD_SETDDRAMADDR | 11), 0);
-	send( hundsAscii , 1 );
+	send( (LCD_SETDDRAMADDR | 11), 0); // upper line 11th character
+	send( hundsAscii , 1 );            // three digit
 	send( tensAscii  , 1 );
 	send( unitsAscii , 1 );
+
+	prevDispVal = ccVal;                // cache for later
 }
 
 void dispLabel(void) {
@@ -498,16 +513,16 @@ void dispLabel(void) {
 	}
 
 	// display the name on the screen
-	send( (LCD_SETDDRAMADDR | 0), 0); // cursor to left
+	send( (LCD_SETDDRAMADDR | 0), 0); // upper line left-aligned
 	uint8_t pos = 0;
 	while( *string != '\0' && pos < 16 ) {
 		this->send( *string , 1 );
 		pos++;
 		string++;
 	} 
-	
+
 	// erase any old remaining label text
-	while( pos < 12 ) {
+	while( pos < 11 ) { // to 11th pos used by dispVal()
 		this->send( ' ' , 1 );
 		pos++;
 	}
@@ -549,14 +564,14 @@ void expanderWrite(uint8_t value){
 }
 
 void pulseEnable(uint8_t value){
-	static systime_t usec1 = US2ST(1); // time in sys ticks for 1 usec
+	static systime_t usec1 = US2ST(1);   // time in sys ticks for 1 usec
 	static systime_t usec50 = US2ST(50); // time in sys ticks for 50 usec
 	
-	expanderWrite(value | EXPAND_CS); // enable pin is high
-	chThdSleep(usec1);               // enable pulse must be >450ns
+	expanderWrite(value | EXPAND_CS);    // enable pin is high
+	chThdSleep(usec1);                   // enable pulse must be >450ns
 
-	expanderWrite(value & ~EXPAND_CS); // enable pin is low
-	chThdSleep(usec50);               // commands need > 37us to settle	
+	expanderWrite(value & ~EXPAND_CS);   // enable pin is low
+	chThdSleep(usec50);                  // commands need > 37us to settle	
 }
 
 // writes to the expander (all 8 bits actually) pulsing the CS(Enable) pin
@@ -595,7 +610,7 @@ void setup(void){
 
 	// begin commands by turning RS, RW and CS(E) pins low
 	expanderWrite(0);
-	chThdSleepMilliseconds(450);
+	chThdSleepMilliseconds(10);
 
 	//put the LCD into 4 bit mode
 	// this is according to the hitachi HD44780 datasheet
@@ -610,7 +625,7 @@ void setup(void){
 	write4bits(0x02<<4); // set 4-bit interface (D4 D5 D6 D7 only)
 
 	// desired function set
-	send(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS, 0);
+	send(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS, 0);
 
 	// desired display mode
 	send(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF, 0);
@@ -624,11 +639,21 @@ void setup(void){
 	// reset cursor
 	send(LCD_RETURNHOME, 0);
 	chThdSleepMilliseconds(10);
+	
+     if( startMsg ){                 // valid startup message?
+	 writeString( startMsg, 64 );   // lower line displays startMsg beginning
+     }
 
-	writeString( (char*)"use USB midi", 0 );
-	chThdSleepMilliseconds(1500);
+     if( startMsg+15 ){              // valid startup continuation?
+	 writeString( startMsg+16, 0 ); // upper line displays startMsg continuation
+     }
 }]]></code.declaration>
-         <code.init><![CDATA[// currentPExIdx is overriden by K-rate code
+         <code.init><![CDATA[// our startup message is sent to LCD in localData setup() 
+//char* startMsg = "pls use DIN MIDI";                // explicit startup message
+//char* startMsg = "attr_startMsg";                   // or from a text attribute
+startMsg = parent->instancesysexReport_i.sysexident;  // or from sysexReport attr
+
+// currentPExIdx is overriden by K-rate code
 // we pull currentPExIdx value stored in companion 'panelMidi'
 // the LCD thread handles updating and checking previouPExIDx
 previouPExIdx = currentPExIdx = 0; 
@@ -725,7 +750,13 @@ palSetPadMode(GPIOB, 6, PAL_MODE_INPUT_PULLUP);              // panel toggle swi
 palSetPadMode(GPIOB, 4, PAL_MODE_INPUT_PULLUP);
 palSetPadMode(GPIOB, 3, PAL_MODE_INPUT_PULLUP);
 palSetPadMode(GPIOC, 7, PAL_MODE_INPUT_PULLUP);]]></code.init>
-         <code.krate><![CDATA[if( 1 ){ // always?
+         <code.krate><![CDATA[// no further processing when panelAssign is discovering parameters
+if( parent->instancepanelAssign_i.isDiscovering ) return;
+
+// no further processing when sysexReport is reporting
+if( parent->instancesysexReport_i.isReporting ) return;
+
+if( 1 ){ // always?
   int tog =  (palReadPad(GPIOB, 6)<<3)
            | (palReadPad(GPIOB, 4)<<2)
            | (palReadPad(GPIOB, 3)<<1)
@@ -873,7 +904,7 @@ int32_t MAXUNIPOLAR = 1<<27;
 
 int32_t currentPExIdx; // companion 'panelLCD' uses this value
 
-int     report_ntrig;  // report state variable, see k-rate code]]></code.declaration>
+int     inhibit_tx;    // external transmit state variable, see init, k-rate, and midi code]]></code.declaration>
          <code.init><![CDATA[krateTimer = 0;    // mechanism used to slow k-rate processing
 currentPExIdx = 0; // companion 'panelLCD' uses this value
 ccAssignments = parent->instancepanelAssign_i.ccAssignments;
@@ -881,14 +912,17 @@ prevPExValues = parent->instancepanelAssign_i.prevPExValues;
 minimumPExVal = parent->instancepanelAssign_i.minimumPExVal;
 maximumPExVal = parent->instancepanelAssign_i.maximumPExVal;
 
-// invalidate prevPExValues triggering a complete state dump
+// invalidate prevPExValues causing k-rate code to refresh them
+// when report_tx == 1 this also transmits midi cc externally
 for(int i=0; i<NPEXCH; i++){ prevPExValues[i] = -1<<31; }
+
+// we want to inhibit external midi transmission on startup
+// see k-rate code for more details
+inhibit_tx = NPEXCH+1; 
 
 // companions 'panelControl' and 'panelLCD' use these values
 // K-rate code populates when PEx[] value changes are detected
-for(int i=0; i<127; i++){ prevMidiValue[i] = 0; }
-
-report_ntrig = 0;]]></code.init>
+for(int i=0; i<127; i++){ prevMidiValue[i] = 0; }]]></code.init>
          <code.krate><![CDATA[if( ++krateTimer < 150 ) return;          // process slower than krate
 krateTimer = 0;                           // reset timer for next time
 
@@ -921,8 +955,12 @@ for(int i=0; i<NPEXCH; i++){              // for every param in PExch[]
 		}		
 		
 		int midiCC = ccAssignments[i];
-		
-		instancemidiout__1::tx3Byte( MIDI_CONTROL_CHANGE + MIDICHANNEL, midiCC&0x7F, midiValue&0x7F ); //MidiSend3...
+
+		// inhibit external midi transmission?
+		if( inhibit_tx ){ inhibit_tx--; }  // decrement
+		else {                             // transmit
+		  instancemidiout__1::tx3Byte( MIDI_CONTROL_CHANGE + MIDICHANNEL, midiCC&0x7F, midiValue&0x7F ); //MidiSend3...
+		}
 		
 		// companions 'panelControl' and 'panelLCD' use this value
 		prevMidiValue[midiCC] = midiValue;
@@ -933,11 +971,15 @@ disp_cidx = currentPExIdx;]]></code.krate>
          <code.midihandler><![CDATA[// no further processing when panelAssign is discovering parameters
 if( parent->instancepanelAssign_i.isDiscovering ) return;
 
+// no further processing when sysexReport is reporting
+if( parent->instancesysexReport_i.isReporting ) return;
+
 // pgm127 triggers statedump
 if( status==(MIDI_PROGRAM_CHANGE+MIDICHANNEL) && data1==127 ){
 
-    // invalidate prevPExValues triggering a state report in k-rate code
+    // invalidate prevPExValues causing k-rate code to refresh them
     for(int i=0; i<NPEXCH; i++){ prevPExValues[i] = -1<<31; }
+    inhibit_tx = 0; // permit external midi transmission immediately
 }]]></code.midihandler>
       </object>
    </patchobj>
@@ -1129,7 +1171,7 @@ be aware of ext midi loopbacks!]]></sText>
       <params/>
       <attribs>
          <text attributeName="ident">
-            <sText><![CDATA[syxsystem 1e 2025oct23]]></sText>
+            <sText><![CDATA[syxsystem 1e 2026feb15]]></sText>
          </text>
       </attribs>
       <object id="patch/object" uuid="29d6cacf-b87e-4473-984c-64b14e1033be">
@@ -1204,9 +1246,11 @@ void rxSysex(uint8_t v)
   static int idx = 0;                         // used to derive PExIdx, range 0..NPEXCH
   static int nibbleIdx = 0;                   // used to assemble one int32_t 'modvalue'
   
-  if( 0xF0==v )                      idx = 0; // zero index 0xF0 sysex start
+  if( 0xF0==v ){
+	nibbleIdx = idx = 0;                     // zero indexes on 0xF0 sysex start
+  }
+  else if( 0xF7==v )                 idx=0;   // zero idx (unset isReporting below) on 0xF7 sysex end 
   else if( v && v==sysexident[idx] ) idx++;   // incr index signature match (ignore null terminated string)
-  else if( 0xF7==v )                 idx = 0; // zero index 0xF7 sysex stop
   else if( idx >= sysexidentlen )             // process data after complete header match
   {
       int PExIdx            = idx - sysexidentlen;      
@@ -1217,6 +1261,7 @@ void rxSysex(uint8_t v)
       //LogTextMessage( "DATA[%03d:%d] %03d %02x", PExIdx, nibbleIdx, v, v );
 
       // assemble five nibbled 7bits of one int32_t 'modvalue'
+      
 	 if( 0==nibbleIdx ){ PExVal  = v;       }
 	 if( 1==nibbleIdx ){ PExVal += (v<<7);  }
 	 if( 2==nibbleIdx ){ PExVal += (v<<14); }
