@@ -1411,12 +1411,21 @@ void rxSysex(uint8_t v)
 	 if( 2==nibbleIdx ){ PExVal += (v<<14); }
 	 if( 3==nibbleIdx ){ PExVal += (v<<21); }
 	 if( 4==nibbleIdx ){ PExVal += (v<<28); 
-
+	  
 	  //LogTextMessage( "::::[%03d:::] %03d %02x", PExIdx, PExVal, PExVal );
-
-       ParameterExchange_t* PEx = &patchMeta.pPExch[PExIdx]; // point to param
-       PExParameterChange( PEx, PExVal, 0xFFFD );
-       
+	  
+	  if( PExIdx >= 0 && PExIdx < NPEXCH )
+	  {
+	    //LogTextMessage( "::::[%03d:::] %03d %02x", PExIdx, PExVal, PExVal );
+	    
+	    // update param value but don't invoke (usb) java editor refresh
+	    ParameterExchange_t* param = &patchMeta.pPExch[PExIdx];
+	    param->modvalue -= param->value;
+	    param->value = PExVal;
+	    param->modvalue += param->value;
+	    if( param->pfunction ){ (param->pfunction)(param); }
+	  
+	  }	  
 	 }
 	 if( ++nibbleIdx >= 5 ){ idx++; nibbleIdx = 0; }
   }
