@@ -1034,12 +1034,11 @@ disp_P = currPage;]]></code.krate>
  * optional 'panelLCD' and optional 'panelControl'
  */
 // pointers to data held in companion 'panelAssign' object
-int8_t *ccAssignments = NULL; // detected MIDI CC numbers
-int32_t *minimumPExVal = NULL; // detected minimum range
-int32_t *maximumPExVal = NULL; // detected maximum range
+int8_t *ccAssignments = NULL; // detected MIDI CC for PExIdx
+int8_t *isParmBipolar = NULL; // detected uni/bipolar PExIdx
 
 int32_t *prevPExValues = NULL; // mechanism to spot PExch[] changes
-int8_t  prevMidiValue[127]; // mechanism to spot MIDI CC changes
+int8_t  prevMidiValue[127];    // mechanism to spot MIDI CC changes
 
 int32_t krateTimer; // mechanism to restrit MIDI transmission rate
 
@@ -1055,8 +1054,7 @@ int     inhibit_tx;    // external transmit state variable, see init, k-rate, an
 currentPExIdx = 0; // companion 'panelLCD' uses this value
 ccAssignments = parent->instancepanelAssign_i.ccAssignments;
 prevPExValues = parent->instancepanelAssign_i.prevPExValues;
-minimumPExVal = parent->instancepanelAssign_i.minimumPExVal;
-maximumPExVal = parent->instancepanelAssign_i.maximumPExVal;
+isParmBipolar = parent->instancepanelAssign_i.isParmBipolar;
 
 // invalidate prevPExValues causing k-rate code to refresh them
 // when report_tx == 1 this also transmits midi cc externally
@@ -1082,22 +1080,20 @@ for(int i=0; i<NPEXCH; i++){              // for every param in PExch[]
 	if( ccAssignments[i] < 0 ) continue; // if no cc assignment, advance
 	
 	ParameterExchange_t* PEx = &patchMeta.pPExch[i]; // point to param
+
+	while( PEx->pfunction == PropagateToSub ){ PEx = (ParameterExchange_t*) PEx->finalvalue; } 
+	
 	if( prevPExValues[i] != PEx->modvalue ){       // did value change?
 		prevPExValues[i] = PEx->modvalue;         // update for next time
 
 		currentPExIdx = i;					  // panelLCD uses this value
 
-		int midiValue = __USAT(PEx->modvalue,7);  // range 0..127
-		
-		if( minimumPExVal[i] == MINBIPOLAR &&
-		    maximumPExVal[i] == MAXBIPOLAR) { // do bipolar2unipolar conversion?
+		int midiValue = __USAT(PEx->modvalue>>20,7); // range 0..127
+
+		if( isParmBipolar[i] ) { // do bipolar2unipolar conversion?
 			int bip2uni = (PEx->modvalue>>1) + (1<<26); // half plus offset
 			midiValue = __USAT(bip2uni>>20,7);     // range 0..127
 		}
-		else if( minimumPExVal[i] == MINUNIPOLAR &&
-			    maximumPExVal[i] == MAXUNIPOLAR ) { // do toggle conversion?
-			midiValue = __USAT(PEx->modvalue>>20,7);
-		}		
 		
 		int midiCC = ccAssignments[i];
 
@@ -1148,13 +1144,12 @@ if( status==(MIDI_PROGRAM_CHANGE+MIDICHANNEL) && data1==127 ){
 // companions 'panelControl' and 'panelMidi' use these lookup 
 // tables know which PExIdx to use for a given midi CC number
 // and to know which CC number is assigned to a given PExIdx
-int8_t  ccAssignments[NPEXCH]; // detected MIDI CC for PExId
+int8_t  ccAssignments[NPEXCH]; // detected MIDI CC for PExIdx
+int8_t  isParmBipolar[NPEXCH]; // detected uni/bipolar PExIdx
 int32_t ccToPExLookup[127];    // detected PExId for MIDI CC
 
 int32_t initialValues[NPEXCH]; // initial values from PExch[]
 int32_t prevPExValues[NPEXCH]; // mechanism to spot PExch[] changes
-int32_t minimumPExVal[NPEXCH]; // detected minimum values
-int32_t maximumPExVal[NPEXCH]; // detected maximum values
 const char* nameForPExVal[NPEXCH]; // detected names
 bool    isDiscovering = false;
 
@@ -1185,16 +1180,22 @@ do{
 	ParameterExchange_t* PEx = &patchMeta.pPExch[rootPExIdx];
 	KeyValuePair* kvp = 0;          // may remain nullptr
 
-	// parent sub-patch relationship?
-	if( PEx->pfunction == PropagateToSub ){ PEx = (ParameterExchange_t*) PEx->finalvalue; } 
+     // parent sub-patch relationship?
+	while( PEx->pfunction == PropagateToSub ){ PEx = (ParameterExchange_t*) PEx->finalvalue; }
 	
 	// setup
 	nameForPExVal[rootPExIdx] = "mysteryPExVal";
 	prevPExValues[rootPExIdx] = -1;
-	minimumPExVal[rootPExIdx] = -1;
-	maximumPExVal[rootPExIdx] = -1;
 	ccAssignments[rootPExIdx] = -1;
-	ccDetect(PEx, rootPExIdx);      // modifies ccAssignments[]	
+	isParmBipolar[rootPExIdx]  = false; // 'signed' pfunctions override this
+	isParmBipolar[rootPExIdx] |= PEx->pfunction == pfun_signed_clamp;
+	isParmBipolar[rootPExIdx] |= PEx->pfunction == pfun_signed_clamp_fullrange;
+	isParmBipolar[rootPExIdx] |= PEx->pfunction == pfun_signed_clamp_squarelaw;
+	isParmBipolar[rootPExIdx] |= PEx->pfunction == pfun_signed_clamp_fullrange_squarelaw;
+	isParmBipolar[rootPExIdx] |= PEx->pfunction == pfun_kexpltime;
+	isParmBipolar[rootPExIdx] |= PEx->pfunction == pfun_kexpdtime;
+	
+	ccDetect(PEx, rootPExIdx); // modifies ccAssignments[]	
 	chThdSleepMilliseconds(10);
 	restoreParameters();
 
@@ -1204,30 +1205,37 @@ do{
 	// editor (v1.0.12) does not register some params, unfortunately
 	for(int k=0; k<ObjectKvpRoot->apvp.length; k++){ // all registered ObjectKvps[]
 	   if( ObjectKvps[k]->kvptype == KVP_TYPE_IPVP ){// is ipvp?
-    	     if( PEx == ObjectKvps[k]->ipvp.PEx ){       // match!
+
+    	     if( (ParameterExchange_t*)PEx->finalvalue == ObjectKvps[k]->ipvp.PEx ||
+    	         PEx == ObjectKvps[k]->ipvp.PEx ){ // match!
+
 	 	  kvp = ObjectKvps[k];
+            //LogTextMessage("[%d] %s %d", 
+            //  k, 
+            //  kvp->keyname, 
+            //  kvp->ipvp.minvalue
+            //);
+
+	 	  // try to find parameter name and bipolar range from kvp
+	 	  if( kvp ){
+	 	  	nameForPExVal[rootPExIdx] = kvp->keyname;
+	 	  	isParmBipolar[rootPExIdx] |= (kvp->ipvp.minvalue < 0);
+	 	  }	 	  
     	     }//match?
 	   }//ipvp?
 	}//for
 
-	// try to set isBipolarPExV[] from ipvp.minvalue .maxvalue
-	if( kvp ){                                      // may be nullptr
-	  minimumPExVal[rootPExIdx] = kvp->ipvp.minvalue;
-	  maximumPExVal[rootPExIdx] = kvp->ipvp.maxvalue;
-	  nameForPExVal[rootPExIdx] = kvp->keyname;
-	}
-
 	// if ccDetect() has assigned a valid ccAssignment[] entry 
 	if( ccAssignments[rootPExIdx]>=1 && ccAssignments[rootPExIdx]<=119 ){
-		
-	  //LogTextMessage("CC%d %x..%x i%x (%s) PEx[%d]",
-	  //   ccAssignments[rootPExIdx],
-	  //   minimumPExVal[rootPExIdx],
-	  //   maximumPExVal[rootPExIdx],
-	  //   initialValues[rootPExIdx],
-       //   nameForPExVal[rootPExIdx],
-	  //   rootPExIdx
-	  //   );
+
+	     //LogTextMessage("CC%d %s f%x i%d PEx[%d] %s",
+	     // ccAssignments[rootPExIdx],
+	     // isParmBipolar[rootPExIdx]?"bip":"uni",
+	     // PEx->pfunction,
+	     // initialValues[rootPExIdx],
+	     // rootPExIdx,
+	     // nameForPExVal[rootPExIdx]
+	     //);
 
 	     // companions 'panelControl' and 'panelMidi' use these lookup 
 	     // tables know which PExIdx to use for a given midi CC number
